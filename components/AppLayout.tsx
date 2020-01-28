@@ -1,11 +1,24 @@
 import React from "react";
 
-const Layout: React.FC = ({ children }) => {
+interface IProps {
+  routerPath: string;
+}
+
+const Layout: React.FC<IProps> = ({ children, routerPath }) => {
+  console.log(routerPath);
   return (
-    <>
-      <div>hi hi</div>
-      {children}
-    </>
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-grow bg-indigo-100">{children}</main>
+      <TabBar routerPath={routerPath} />
+    </div>
+  );
+};
+
+const TabBar: React.FC<IProps> = ({ routerPath }) => {
+  return (
+    <footer className="sticky bottom-0 flex flex-row bg-white h-16">
+      
+    </footer>
   );
 };
 

@@ -6,6 +6,9 @@ import { ReactReduxFirebaseProvider } from "react-redux-firebase";
 import { store, rrfProps } from "../scripts/reduxFirebaseStore";
 import AppLayout from "../components/AppLayout";
 
+import "../css/tailwind.css";
+import "../css/styles.css";
+
 class NextApp extends App {
   render() {
     const { Component, pageProps, router } = this.props;
@@ -16,7 +19,7 @@ class NextApp extends App {
           {router.pathname.startsWith("/login") ? (
             <Component {...pageProps}></Component>
           ) : (
-            <AppLayout>
+            <AppLayout routerPath={router.pathname}>
               <Component {...pageProps}></Component>
             </AppLayout>
           )}
