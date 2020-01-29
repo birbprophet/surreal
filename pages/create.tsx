@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import Router from "next/router";
 
@@ -8,23 +8,26 @@ import { isLoaded, isEmpty } from "react-redux-firebase";
 import LoadingModal from "../components/LoadingModal";
 
 const Page: React.FC = () => {
+  const [state, setState] = useState({ isLoading: false });
   const auth = useSelector(state => state.firebase.auth);
 
   useEffect(() => {
-    if (isLoaded(auth) && !isEmpty(auth)) {
-      Router.push("/home");
-    } else if (isLoaded(auth) && isEmpty(auth)) {
+    if (isLoaded(auth) && isEmpty(auth)) {
       Router.push("/login");
     }
+    setState({ ...state, isLoading: !isLoaded(auth) });
   }, [auth]);
 
   return (
     <>
       <Head>
-        <title>Surreal</title>
+        <title>surreal</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {!isLoaded(auth) && <LoadingModal />}
+      <div>
+        {state.isLoading && <LoadingModal />}
+        Profile
+      </div>
     </>
   );
 };

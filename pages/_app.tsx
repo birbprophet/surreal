@@ -11,16 +11,16 @@ import "../css/styles.css";
 
 class NextApp extends App {
   render() {
-    const { Component, pageProps, router } = this.props;
+    const { Component: Page, pageProps, router } = this.props;
 
     return (
       <Provider store={store}>
         <ReactReduxFirebaseProvider {...rrfProps}>
-          {router.pathname.startsWith("/login") ? (
-            <Component {...pageProps}></Component>
+          {["/", "/login", "/welcome"].includes(router.pathname) ? (
+            <Page {...pageProps}></Page>
           ) : (
             <AppLayout routerPath={router.pathname}>
-              <Component {...pageProps}></Component>
+              <Page {...pageProps}></Page>
             </AppLayout>
           )}
         </ReactReduxFirebaseProvider>
