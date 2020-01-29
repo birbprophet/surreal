@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Head from "next/head";
 import Router from "next/router";
 
@@ -12,22 +12,41 @@ import {
 
 import { motion } from "framer-motion";
 import SVG from "react-inlinesvg";
-import { FiArrowRight, FiAlertCircle, FiCheckCircle } from "react-icons/fi";
+import {
+  FiArrowRight,
+  FiAlertCircle,
+  FiCheckCircle,
+  FiPlus
+} from "react-icons/fi";
 
+import { useDropzone } from "react-dropzone";
 import LoadingModal from "../components/LoadingModal";
 
 const Page: React.FC = () => {
   const firebase = useFirebase();
   useFirestoreConnect([{ collection: "users" }]);
   const users = useSelector(state => state.firestore.ordered.users);
+  const filesPath = "profilePictureUploads";
+
   const [state, setState] = useState({
     isLoading: false,
-    pageNum: 2,
+    pageNum: 3,
     inputUsername: "",
-    errorMessage: ""
+    errorMessage: "",
+    uploadingMessage: "No profile picture"
   });
   const auth = useSelector(state => state.firebase.auth);
   const profile = useSelector(state => state.firebase.profile);
+
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
+    accept: "image/*"
+  });
+
+  useEffect(() => {
+    if (state.pageNum > 3) {
+      Router.push("/home");
+    }
+  }, [state]);
 
   useEffect(() => {
     if (isLoaded(auth) && isEmpty(auth)) {
@@ -56,6 +75,23 @@ const Page: React.FC = () => {
       setState({ ...state, errorMessage });
     }
   }, [state]);
+
+  useEffect(() => {
+    if (acceptedFiles.length > 0) {
+      const profilePicture = acceptedFiles[0];
+
+      firebase.uploadFile(filesPath, profilePicture, filesPath, {
+        name: `${auth.uid}.${profilePicture.name.split(".").pop()}`
+      });
+      setState({ ...state, uploadingMessage: "Processing..." });
+    }
+  }, [acceptedFiles]);
+
+  useEffect(() => {
+    if (profile.profilePictureUrls) {
+      setState({ ...state, uploadingMessage: "Picture uploaded!" });
+    }
+  }, [profile]);
 
   const variants = {
     hidden: { opacity: 0, x: "100%" },
@@ -219,10 +255,19 @@ const Page: React.FC = () => {
       <motion.div
         className="absolute h-screen w-full flex flex-col"
         variants={variants}
-        animate={state.pageNum === 2 ? "active" : "hidden"}
+        animate={
+          state.pageNum === 2
+            ? "active"
+            : state.pageNum === 3
+            ? "passed"
+            : "hidden"
+        }
       >
         <div className="flex-1" />
-        <SVG src="./svgs/undraw_taking_selfie_lbo7.svg" className="w-full h-48" />
+        <SVG
+          src="./svgs/undraw_taking_selfie_lbo7.svg"
+          className="w-full h-48"
+        />
         <div className="flex flex-row bg-indigo-500 px-10 pt-8">
           <div className="text-2xl text-white pr-4">2.</div>
           <div className="flex-1 flex flex-col">
@@ -233,55 +278,34 @@ const Page: React.FC = () => {
                 add a profile picture?
               </div>
             </div>
-            <div className="mb-2">
-              <div className="text-lg text-indigo-200">Enter your username</div>
-              <div className="flex items-center border-b border-b-2 border-white py-2">
-                <input
-                  className="appearance-none bg-transparent border-none w-full py-1 text-white text-xl font-semibold focus:outline-none"
-                  type="text"
-                  aria-label="username"
-                  value={state.inputUsername}
-                  onChange={handleInputChange}
-                  maxLength={13}
-                />
-                {state.errorMessage && (
-                  <FiAlertCircle size={24} className="text-indigo-200 mx-2" />
-                )}
-                {!state.errorMessage && state.inputUsername && (
-                  <FiCheckCircle size={24} className="text-indigo-200 mx-2" />
-                )}
-              </div>
-              {(state.errorMessage || !state.inputUsername) && (
-                <div className="mt-2 h-12 text-red-200">
-                  {state.errorMessage}
-                </div>
-              )}
-              {!state.errorMessage && state.inputUsername && (
-                <div className="mt-2 h-6 text-green-200">
-                  {state.inputUsername} is available!
-                </div>
-              )}
-              <div
-                className={
-                  "h-12 " +
-                  (state.errorMessage || !state.inputUsername
-                    ? "mb-6"
-                    : "mb-12")
-                }
-              ></div>
-              {!state.errorMessage && state.inputUsername && (
-                <div className="absolute right-0 bottom-0 pb-6 pr-10">
-                  <button
-                    className="flex bg-indigo-900 py-2 w-full rounded-full focus:outline-none px-6"
-                    onClick={handleContinueClick}
+            <div className="mb-2 h-48">
+              <div className="mt-2 flex flex-row">
+                {profile.profilePictureUrls ? (
+                  <div className="bg-indigo-200 rounded-full h-20 w-20 flex">
+                    <img
+                      className="m-auto rounded-full h-16 w-16"
+                      src={profile.profilePictureUrls.small}
+                      alt="profile picture"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    {...getRootProps()}
+                    className="bg-indigo-400 rounded-full h-20 w-20 flex focus:outline-none"
                   >
-                    <div className="text-xl text-white w-full flex">
-                      <div className="flex-1 text-center">Next</div>
-                      <FiArrowRight className="mt-1 ml-4" />
-                    </div>
-                  </button>
+                    <input {...getInputProps()} />
+                    <FiPlus className="m-auto text-indigo-200" size={32} />
+                  </div>
+                )}
+                <div className="mt-4 ml-4 flex flex-col">
+                  <div className="text-white font-semibold text-xl">
+                    @{profile.username}
+                  </div>
+                  <div className="text-indigo-200">
+                    {state.uploadingMessage}
+                  </div>
                 </div>
-              )}
+              </div>
 
               <div className="absolute left-0 bottom-0 pb-6 pl-4">
                 <button
@@ -293,8 +317,64 @@ const Page: React.FC = () => {
                   </div>
                 </button>
               </div>
+
+              <div className="absolute right-0 bottom-0 pb-6 pr-10">
+                <button
+                  className="flex bg-indigo-900 py-2 w-full rounded-full focus:outline-none px-6"
+                  onClick={handleContinueClick}
+                >
+                  <div className="text-xl text-white w-full flex">
+                    <div className="flex-1 text-center">
+                      {profile.profilePictureUrls ? "Next" : "Skip"}
+                    </div>
+                    <FiArrowRight className="mt-1 ml-4" />
+                  </div>
+                </button>
+              </div>
             </div>
           </div>
+        </div>
+      </motion.div>
+      <motion.div
+        className="absolute h-screen w-full flex flex-col"
+        variants={variants}
+        animate={
+          state.pageNum === 3
+            ? "active"
+            : state.pageNum === 4
+            ? "passed"
+            : "hidden"
+        }
+      >
+        <div className=" flex-1 flex flex-col bg-indigo-500 pb-12">
+          <div className="m-auto">
+            <SVG
+              src="./svgs/undraw_confirmation_2uy0.svg"
+              className="w-full h-48"
+            />
+            <div className="mt-8 mx-10">
+              <div className="text-5xl font-bold text-white text-center">
+                Complete!
+              </div>
+            </div>
+            <div className="mt-2 mx-10">
+              <div className="text-xl text-white text-center">
+                Now, it's time to embark on our adventures into the surreal...
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="absolute bottom-0 w-full px-10 pb-6 z-10">
+          <button
+            className="flex bg-indigo-900 py-4 w-full rounded-full focus:outline-none px-6"
+            onClick={handleContinueClick}
+          >
+            <div className="text-xl text-white w-full flex">
+              <FiArrowRight className="mt-1 text-indigo-900" size={24} />
+              <div className="flex-1 text-center">Go to App</div>
+              <FiArrowRight className="mt-1" size={24} />
+            </div>
+          </button>
         </div>
       </motion.div>
     </>

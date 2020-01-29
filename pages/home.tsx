@@ -11,7 +11,6 @@ const Page: React.FC = () => {
   const [state, setState] = useState({ isLoading: false });
   const auth = useSelector(state => state.firebase.auth);
   const profile = useSelector(state => state.firebase.profile);
-  console.log(profile);
   useEffect(() => {
     if (isLoaded(auth) && isEmpty(auth)) {
       Router.push("/login");

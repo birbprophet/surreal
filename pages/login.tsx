@@ -5,6 +5,9 @@ import Router from "next/router";
 import { useSelector } from "react-redux";
 import { useFirebase, isLoaded, isEmpty } from "react-redux-firebase";
 
+import Typist from "react-typist";
+import TypistLoop from "react-typist-loop";
+
 import { FaGoogle, FaFacebookF } from "react-icons/fa";
 
 import LoadingModal from "../components/LoadingModal";
@@ -14,6 +17,12 @@ const Page: React.FC = () => {
   const [state, setState] = useState({ isLoading: false });
   const auth = useSelector(state => state.firebase.auth);
   const profile = useSelector(state => state.firebase.profile);
+
+  const typistLoopTextList = [
+    "surreal adventures",
+    "ridiculous stories",
+    "random tales"
+  ];
 
   useEffect(() => {
     if (isLoaded(auth) && !isEmpty(auth)) {
@@ -44,14 +53,33 @@ const Page: React.FC = () => {
       <div className="h-screen w-screen bg-indigo-100 flex flex-col">
         <div className="flex-1" />
         <div className="mb-4 mx-10">
-          <div className="text-4xl font-bold text-black leading-tight">
-            Hello!
-            <br />
-            Let's get started
+          <div className="text-3xl font-semibold text-black leading-tight">
+            Let's create some
+            <div className="h-12 text-4xl font-bold">
+              <TypistLoop interval={0}>
+                {typistLoopTextList.map((text, idx) => (
+                  <Typist
+                    key={idx}
+                    startDelay={1000}
+                    cursor={{
+                      show: false,
+                      blink: true,
+                      element: "_"
+                    }}
+                  >
+                    {text}
+                    <Typist.Delay ms={2000} />
+                    {Array.prototype.map.call(text, char => (
+                      <Typist.Backspace key={char} count={1} delay={50} />
+                    ))}
+                  </Typist>
+                ))}
+              </TypistLoop>
+            </div>
           </div>
         </div>
-        <div className="mb-12 mx-10">
-          <div className="text-xl">Please login to contiue</div>
+        <div className="mb-10 mx-10">
+          <div className="text-xl">Please login to continue</div>
         </div>
         <div className="mb-12 mx-10">
           <div className="mb-2">
