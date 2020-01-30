@@ -44,7 +44,7 @@ const Page: React.FC = () => {
   };
 
   return (
-    <div>
+    <>
       <Head>
         <title>Surreal - Login</title>
         <link rel="icon" href="/favicon.ico" />
@@ -111,7 +111,7 @@ const Page: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
