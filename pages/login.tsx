@@ -27,7 +27,7 @@ const Page: React.FC = () => {
   useEffect(() => {
     if (isLoaded(auth) && !isEmpty(auth)) {
       if (isLoaded(profile) && !isEmpty(profile)) {
-        Router.push("/home");
+        Router.push("/create");
       } else if (isLoaded(profile) && isEmpty(profile)) {
         Router.push("/welcome");
       }

@@ -33,7 +33,8 @@ const Page: React.FC = () => {
     pageNum: 0,
     inputUsername: "",
     errorMessage: "",
-    uploadingMessage: "No profile picture"
+    uploadingMessage: "No profile picture",
+    profilePictureUrl: null
   });
   const auth = useSelector(state => state.firebase.auth);
   const profile = useSelector(state => state.firebase.profile);
@@ -44,15 +45,9 @@ const Page: React.FC = () => {
 
   useEffect(() => {
     if (state.pageNum > 3) {
-      Router.push("/home");
+      Router.push("/create");
     }
   }, [state]);
-
-  useEffect(() => {
-    if (isEmpty(profile) && isLoaded(profile)) {
-      firebase.updateProfile({ joined: new Date() });
-    }
-  }, [profile]);
 
   useEffect(() => {
     if (isLoaded(auth) && isEmpty(auth)) {
@@ -94,8 +89,15 @@ const Page: React.FC = () => {
   }, [acceptedFiles]);
 
   useEffect(() => {
-    if (profile.profilePictureUrls) {
-      setState({ ...state, uploadingMessage: "Picture uploaded!" });
+    if (
+      profile.profilePictureUrls &&
+      profile.profilePictureUrls.small !== state.profilePictureUrl
+    ) {
+      setState({
+        ...state,
+        profilePictureUrl: profile.profilePictureUrls.small,
+        uploadingMessage: "Picture uploaded!"
+      });
     }
   }, [profile]);
 
@@ -118,7 +120,8 @@ const Page: React.FC = () => {
       }, {});
     firebase.updateProfile({
       ...filteredProfile,
-      username: state.inputUsername.slice(1)
+      username: state.inputUsername.slice(1),
+      joined: new Date().toISOString()
     });
     setState({ ...state, pageNum: state.pageNum + 1 });
   };
@@ -295,11 +298,15 @@ const Page: React.FC = () => {
             </div>
             <div className="mb-2 h-48">
               <div className="mt-2 flex flex-row">
-                {profile.profilePictureUrls ? (
-                  <div className="bg-indigo-200 rounded-full h-20 w-20 flex">
+                {state.profilePictureUrl ? (
+                  <div
+                    {...getRootProps()}
+                    className="bg-indigo-400 rounded-full h-20 w-20 flex"
+                  >
+                    <input {...getInputProps()} />
                     <img
                       className="m-auto rounded-full h-16 w-16"
-                      src={profile.profilePictureUrls.small}
+                      src={state.profilePictureUrl}
                       alt="profile picture"
                     />
                   </div>

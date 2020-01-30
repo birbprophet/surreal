@@ -65,8 +65,9 @@ export const resizeImg = functions
 
     await Promise.all(uploadPromises);
 
-    const templateString =
-      "https://firebasestorage.googleapis.com/v0/b/surreal-d0311.appspot.com/o/profilePictureUploads%2F__USER_UID__%40s___SIZE__.jpg?alt=media";
+    const currentTime = new Date();
+    const currentTimestamp = currentTime.getTime();
+    const templateString = `https://firebasestorage.googleapis.com/v0/b/surreal-d0311.appspot.com/o/profilePictureUploads%2F__USER_UID__%40s___SIZE__.jpg?alt=media&t=${currentTimestamp.toString()}`;
     await db
       .collection("users")
       .doc(uid)
