@@ -50,7 +50,7 @@ const Page: React.FC = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {state.isLoading && <LoadingModal />}
-      <div className="h-screen w-full bg-indigo-100 flex flex-col">
+      <div className="h-full w-full bg-indigo-100 flex flex-col">
         <div className="flex-1" />
         <div className="mb-4 mx-10">
           <div className="text-3xl font-semibold text-black leading-tight">
