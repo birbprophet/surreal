@@ -23,10 +23,6 @@ const Page: React.FC = () => {
 
   const handleLogout = () => firebase.logout();
 
-  const updateUserProfile = () => {
-    return firebase.updateProfile({ role: "admin" });
-  };
-
   return (
     <>
       <Head>
@@ -34,11 +30,8 @@ const Page: React.FC = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {state.isLoading && <LoadingModal />}
-      Profile
-      <div>{JSON.stringify(profile, null, 2)}</div>
-      <div>{JSON.stringify(auth, null, 2)}</div>
+      Profile Page
       <button onClick={handleLogout}>Logout</button>
-      <button onClick={updateUserProfile}>Update</button>
     </>
   );
 };

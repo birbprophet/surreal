@@ -26,7 +26,7 @@ const Page: React.FC = () => {
       </Head>
       <div>
         {state.isLoading && <LoadingModal />}
-        Profile
+        Create page
       </div>
     </>
   );

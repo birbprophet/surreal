@@ -71,7 +71,11 @@ const Page: React.FC = () => {
                     {text}
                     <Typist.Delay ms={2000} />
                     {Array.prototype.map.call(text, char => (
-                      <Typist.Backspace key={char} count={1} delay={50} />
+                      <Typist.Backspace
+                        key={char + text}
+                        count={1}
+                        delay={50}
+                      />
                     ))}
                   </Typist>
                 ))}
