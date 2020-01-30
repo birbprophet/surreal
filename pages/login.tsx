@@ -21,7 +21,7 @@ const Page: React.FC = () => {
   const typistLoopTextList = [
     "surreal tales",
     "ridiculous stories",
-    "random adventures"
+    "fun adventures"
   ];
 
   useEffect(() => {
