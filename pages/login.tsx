@@ -9,7 +9,6 @@ import Typist from "react-typist";
 import TypistLoop from "react-typist-loop";
 
 import { FaGoogle, FaFacebookF } from "react-icons/fa";
-import Div100vh from "react-div-100vh";
 
 import LoadingModal from "../components/LoadingModal";
 
@@ -50,70 +49,68 @@ const Page: React.FC = () => {
         <title>Surreal - Login</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Div100vh>
-        {state.isLoading && <LoadingModal />}
+      {state.isLoading && <LoadingModal />}
 
-        <div className="h-full w-full bg-indigo-100 flex flex-col">
-          <div className="flex-1" />
-          <div className="mb-4 mx-10">
-            <div className="text-3xl font-semibold text-black leading-tight">
-              Let's create some
-              <div className="h-12 text-4xl font-bold">
-                <TypistLoop interval={0}>
-                  {typistLoopTextList.map((text, idx) => (
-                    <Typist
-                      key={idx}
-                      startDelay={1000}
-                      cursor={{
-                        show: false,
-                        blink: true,
-                        element: "_"
-                      }}
-                    >
-                      {text}
-                      <Typist.Delay ms={2000} />
-                      {Array.prototype.map.call(text, char => (
-                        <Typist.Backspace key={char} count={1} delay={50} />
-                      ))}
-                    </Typist>
-                  ))}
-                </TypistLoop>
-              </div>
-            </div>
-          </div>
-          <div className="mb-10 mx-10">
-            <div className="text-xl">Please login to continue</div>
-          </div>
-          <div className="mb-12 mx-10">
-            <div className="mb-2">
-              <button
-                className="flex bg-blue-500 pl-8 pr-6 py-4 w-full rounded-full focus:outline-none"
-                onClick={loginWithGoogle}
-              >
-                <div className="text-xl text-white w-full flex">
-                  <FaGoogle className="mt-1 mr-2" />
-                  <div className="flex-1">
-                    Login with&nbsp;<span className="font-bold">Google</span>
-                  </div>
-                </div>
-              </button>
-            </div>
-            <div className="mb-2">
-              <button
-                className="flex bg-blue-800 pl-8 pr-6 py-4 w-full rounded-full focus:outline-none"
-                onClick={loginWithFacebook}
-              >
-                <div className="text-xl text-white w-full flex">
-                  <FaFacebookF className="mt-1 mr-2" />
-                  <div className="flex-1">
-                    Login with&nbsp;<span className="font-bold">Facebook</span>
-                  </div>
-                </div>
-              </button>
+      <div className="h-full w-full bg-indigo-100 flex flex-col">
+        <div className="flex-1" />
+        <div className="mb-4 mx-10">
+          <div className="text-3xl font-semibold text-black leading-tight">
+            Let's create some
+            <div className="h-12 text-4xl font-bold">
+              <TypistLoop interval={0}>
+                {typistLoopTextList.map((text, idx) => (
+                  <Typist
+                    key={idx}
+                    startDelay={1000}
+                    cursor={{
+                      show: false,
+                      blink: true,
+                      element: "_"
+                    }}
+                  >
+                    {text}
+                    <Typist.Delay ms={2000} />
+                    {Array.prototype.map.call(text, char => (
+                      <Typist.Backspace key={char} count={1} delay={50} />
+                    ))}
+                  </Typist>
+                ))}
+              </TypistLoop>
             </div>
           </div>
         </div>
-      </Div100vh>
+        <div className="mb-10 mx-10">
+          <div className="text-xl">Please login to continue</div>
+        </div>
+        <div className="mb-12 mx-10">
+          <div className="mb-2">
+            <button
+              className="flex bg-blue-500 pl-8 pr-6 py-4 w-full rounded-full focus:outline-none"
+              onClick={loginWithGoogle}
+            >
+              <div className="text-xl text-white w-full flex">
+                <FaGoogle className="mt-1 mr-2" />
+                <div className="flex-1">
+                  Login with&nbsp;<span className="font-bold">Google</span>
+                </div>
+              </div>
+            </button>
+          </div>
+          <div className="mb-2">
+            <button
+              className="flex bg-blue-800 pl-8 pr-6 py-4 w-full rounded-full focus:outline-none"
+              onClick={loginWithFacebook}
+            >
+              <div className="text-xl text-white w-full flex">
+                <FaFacebookF className="mt-1 mr-2" />
+                <div className="flex-1">
+                  Login with&nbsp;<span className="font-bold">Facebook</span>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

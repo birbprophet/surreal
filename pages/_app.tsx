@@ -6,6 +6,8 @@ import { ReactReduxFirebaseProvider } from "react-redux-firebase";
 import { store, rrfProps } from "../scripts/reduxFirebaseStore";
 import AppLayout from "../components/AppLayout";
 
+import Div100vh from "react-div-100vh";
+
 import "../css/tailwind.css";
 import "../css/styles.css";
 import "typeface-asap";
@@ -18,11 +20,15 @@ class NextApp extends App {
       <Provider store={store}>
         <ReactReduxFirebaseProvider {...rrfProps}>
           {["/", "/login", "/welcome"].includes(router.pathname) ? (
-            <Page {...pageProps}></Page>
-          ) : (
-            <AppLayout routerPath={router.pathname}>
+            <Div100vh>
               <Page {...pageProps}></Page>
-            </AppLayout>
+            </Div100vh>
+          ) : (
+            <Div100vh>
+              <AppLayout routerPath={router.pathname}>
+                <Page {...pageProps}></Page>
+              </AppLayout>
+            </Div100vh>
           )}
         </ReactReduxFirebaseProvider>
       </Provider>
