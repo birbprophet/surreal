@@ -60,12 +60,10 @@ const Page: React.FC = () => {
               <TypistLoop interval={0}>
                 {typistLoopTextList.map((text, idx) => (
                   <Typist
-                    key={idx}
+                    key={text}
                     startDelay={1000}
                     cursor={{
-                      show: false,
-                      blink: true,
-                      element: "_"
+                      show: false
                     }}
                   >
                     {text}

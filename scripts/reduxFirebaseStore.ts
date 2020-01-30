@@ -2,6 +2,7 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import "firebase/storage";
+
 import { createStore, combineReducers } from "redux";
 import { firebaseReducer } from "react-redux-firebase";
 import { createFirestoreInstance, firestoreReducer } from "redux-firestore";
@@ -36,6 +37,7 @@ const rootReducer = combineReducers({
 const initialState = {};
 
 export const store = createStore(rootReducer, initialState);
+
 export const rrfProps = {
   firebase,
   config: rrfConfig,

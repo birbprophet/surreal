@@ -18,7 +18,6 @@ import {
   FiCheckCircle,
   FiPlus
 } from "react-icons/fi";
-import Div100vh from "react-div-100vh";
 
 import { useDropzone } from "react-dropzone";
 import LoadingModal from "../components/LoadingModal";
@@ -122,7 +121,11 @@ const Page: React.FC = () => {
     firebase.updateProfile({
       ...filteredProfile,
       username: state.inputUsername.slice(1),
-      joined: new Date().toISOString()
+      joined: new Date().toISOString(),
+      description: "Write a short description",
+      posts: [],
+      followers: [],
+      following: []
     });
     setState({ ...state, pageNum: state.pageNum + 1 });
   };

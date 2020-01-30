@@ -10,8 +10,8 @@ interface IProps {
 
 const Layout: React.FC<IProps> = ({ children, routerPath }) => {
   return (
-    <div className="flex flex-col min-h-screen">
-      <main className="flex-grow bg-indigo-100">{children}</main>
+    <div className="flex flex-col h-full">
+      <main className="flex-grow bg-indigo-100 h-full">{children}</main>
       <TabBar routerPath={routerPath} />
     </div>
   );
