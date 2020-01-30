@@ -30,7 +30,7 @@ const Page: React.FC = () => {
 
   const [state, setState] = useState({
     isLoading: false,
-    pageNum: 3,
+    pageNum: 0,
     inputUsername: "",
     errorMessage: "",
     uploadingMessage: "No profile picture"
@@ -47,6 +47,12 @@ const Page: React.FC = () => {
       Router.push("/home");
     }
   }, [state]);
+
+  useEffect(() => {
+    if (isEmpty(profile) && isLoaded(profile)) {
+      firebase.updateProfile({ joined: new Date() });
+    }
+  }, [profile]);
 
   useEffect(() => {
     if (isLoaded(auth) && isEmpty(auth)) {
@@ -104,7 +110,16 @@ const Page: React.FC = () => {
   };
 
   const handleUsernameContinueClick = () => {
-    firebase.updateProfile({ username: state.inputUsername.slice(1) });
+    const filteredProfile = Object.keys(profile)
+      .filter(key => !["isEmpty", "isLoaded"].includes(key))
+      .reduce((obj, key) => {
+        obj[key] = profile[key];
+        return obj;
+      }, {});
+    firebase.updateProfile({
+      ...filteredProfile,
+      username: state.inputUsername.slice(1)
+    });
     setState({ ...state, pageNum: state.pageNum + 1 });
   };
 

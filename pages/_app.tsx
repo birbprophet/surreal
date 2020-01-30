@@ -8,6 +8,7 @@ import AppLayout from "../components/AppLayout";
 
 import "../css/tailwind.css";
 import "../css/styles.css";
+import "typeface-asap";
 
 class NextApp extends App {
   render() {
