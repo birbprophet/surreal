@@ -1,8 +1,0 @@
-azure-functions
-gpt-2-simple
-tensorflow<2
-regex
-requests
-tqdm
-numpy
-toposort

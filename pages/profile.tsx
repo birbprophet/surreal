@@ -41,7 +41,7 @@ const Page: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Surreal -Profile</title>
+        <title>Surreal - Profile</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {state.isLoading && <LoadingModal />}
@@ -53,6 +53,11 @@ const Page: React.FC = () => {
             handleProfileDescriptionChange={handleProfileDescriptionChange}
           />
         </div>
+        {!profile.posts.length && (
+          <div className="flex">
+            <div className="m-auto">No posts yet</div>
+          </div>
+        )}
       </div>
     </>
   );

@@ -23,12 +23,12 @@ const Page: React.FC = () => {
   return (
     <>
       <Head>
-        <title>surreal</title>
+        <title>Surreal - Home</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div>
-        {state.isLoading && <LoadingModal />}
-        Home Page
+      {state.isLoading && <LoadingModal />}
+      <div className="h-full scrolling-touch overflow-scroll">
+        <div className="flex flex-col bg-white rounded-b-lg px-6 pt-6 shadow-lg"></div>
       </div>
     </>
   );
