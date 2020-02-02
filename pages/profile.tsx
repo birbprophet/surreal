@@ -53,7 +53,7 @@ const Page: React.FC = () => {
             handleProfileDescriptionChange={handleProfileDescriptionChange}
           />
         </div>
-        {!profile.posts.length && (
+        {profile.posts && !profile.posts.length && (
           <div className="flex">
             <div className="m-auto">No posts yet</div>
           </div>

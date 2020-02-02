@@ -146,7 +146,7 @@ const Page: React.FC = () => {
       </Head>
       {state.isLoading && <LoadingModal />}
       <motion.div
-        className="absolute h-screen w-full bg-indigo-100 flex flex-col"
+        className="absolute h-full w-full bg-indigo-100 flex flex-col"
         variants={variants}
         animate={state.pageNum === 0 ? "active" : "passed"}
       >
@@ -182,7 +182,7 @@ const Page: React.FC = () => {
         </div>
       </motion.div>
       <motion.div
-        className="absolute h-screen w-full bg-white flex flex-col"
+        className="absolute h-full w-full bg-white flex flex-col"
         variants={variants}
         animate={
           state.pageNum === 1
