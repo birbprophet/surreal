@@ -30,7 +30,7 @@ const Page: React.FC = () => {
 
   const [state, setState] = useState({
     isLoading: false,
-    pageNum: 0,
+    pageNum: 1,
     inputUsername: "",
     errorMessage: "",
     uploadingMessage: "No profile picture",
@@ -199,8 +199,8 @@ const Page: React.FC = () => {
         <div className="flex-1" />
         <SVG src="./svgs/undraw_fall_thyk.svg" className="w-full h-48" />
         <div className="flex flex-row bg-indigo-500 px-10 pt-8">
-          <div className="text-2xl text-white pr-4">1.</div>
-          <div className="flex-1 flex flex-col">
+          <div className="absolute text-2xl text-white">1.</div>
+          <div className="flex-1 flex flex-col ml-8">
             <div className="mb-4">
               <div className="text-2xl text-white">
                 Okay firstly,
@@ -210,7 +210,7 @@ const Page: React.FC = () => {
             </div>
             <div className="mb-2">
               <div className="text-lg text-indigo-200">Enter your username</div>
-              <div className="flex items-center border-b border-b-2 border-white py-2">
+              <div className="flex items-center border-b border-b-2 border-white py-2 mr-8">
                 <input
                   className="appearance-none bg-transparent border-none w-full py-1 text-white text-xl font-semibold focus:outline-none"
                   type="text"
@@ -295,8 +295,8 @@ const Page: React.FC = () => {
           className="w-full h-48"
         />
         <div className="flex flex-row bg-indigo-500 px-10 pt-8">
-          <div className="text-2xl text-white pr-4">2.</div>
-          <div className="flex-1 flex flex-col">
+          <div className="absolute text-2xl text-white">2.</div>
+          <div className="flex-1 flex flex-col ml-8">
             <div className="mb-4">
               <div className="text-2xl text-white">
                 Would you like to
