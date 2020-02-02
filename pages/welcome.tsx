@@ -143,6 +143,10 @@ const Page: React.FC = () => {
       <Head>
         <title>Surreal - Welcome</title>
         <link rel="icon" href="/favicon.ico" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+        />
       </Head>
       {state.isLoading && <LoadingModal />}
       <motion.div
@@ -275,7 +279,7 @@ const Page: React.FC = () => {
         </div>
       </motion.div>
       <motion.div
-        className="absolute h-screen w-full flex flex-col"
+        className="absolute h-full w-full flex flex-col"
         variants={variants}
         animate={
           state.pageNum === 2
@@ -362,7 +366,7 @@ const Page: React.FC = () => {
         </div>
       </motion.div>
       <motion.div
-        className="absolute h-screen w-full flex flex-col"
+        className="absolute h-full w-full flex flex-col"
         variants={variants}
         animate={
           state.pageNum === 3
@@ -426,7 +430,7 @@ const getInvalidUsernameMessage = (rawInputUsername: string): string => {
     } else if (inputUsername.length < 3) {
       return "Username must be at least 3 characters long";
     } else {
-      return "Username can only contain letters, numbers, ., or _";
+      return "Username can only contain lowercase letters, numbers, ., or _";
     }
   } else {
     return "";
