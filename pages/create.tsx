@@ -51,29 +51,31 @@ const Page: React.FC = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {state.isLoading && <LoadingModal />}
-      <div className="px-10 py-16 h-full w-full">
-        <div className="flex flex-col h-full w-full bg-white shadow-md rounded-lg pt-16 px-8">
-          <SVG src="./svgs/undraw_void_3ggu.svg" className="w-full h-40" />
-          <div className="text-center text-3xl font-bold mt-8 text-indigo-900">
-            {state.currentSession ? "Continue" : "Start Adventure"}
-          </div>
-          <div className="text-center text-xl">
-            {state.currentSession
-              ? "Resume your adventure"
-              : "Click here to get started"}
-          </div>
-          <div className="mt-6">
-            <Link href="/generate">
-              <button className="flex bg-indigo-900 py-4 w-full rounded-full focus:outline-none px-6">
-                <div className="text-xl text-white w-full flex">
-                  <FiArrowRight className="mt-1 text-indigo-900" size={24} />
-                  <div className="flex-1 text-center">
-                    {state.currentSession ? "Resume" : "Begin"}
+      <div className="flex h-full w-full p-8">
+        <div className="m-auto flex bg-white shadow-md rounded-lg p-8">
+          <div className="m-auto flex flex-col">
+            <SVG src="./svgs/undraw_void_3ggu.svg" className="w-full h-40" />
+            <div className="text-center text-3xl font-bold mt-8 text-indigo-900">
+              {state.currentSession ? "Continue" : "Start Adventure"}
+            </div>
+            <div className="text-center text-xl">
+              {state.currentSession
+                ? "Resume your adventure"
+                : "Click here to get started"}
+            </div>
+            <div className="mt-6">
+              <Link href="/generate">
+                <button className="flex bg-indigo-900 py-4 w-full rounded-full focus:outline-none px-6">
+                  <div className="text-xl text-white w-full flex">
+                    <FiArrowRight className="mt-1 text-indigo-900" size={24} />
+                    <div className="flex-1 text-center">
+                      {state.currentSession ? "Resume" : "Begin"}
+                    </div>
+                    <FiArrowRight className="mt-1" size={24} />
                   </div>
-                  <FiArrowRight className="mt-1" size={24} />
-                </div>
-              </button>
-            </Link>
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
