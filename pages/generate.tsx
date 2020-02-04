@@ -26,7 +26,8 @@ const Page: React.FC = () => {
   const firestore = useFirestore();
   const [state, setState] = useState({
     isLoading: true,
-    currentSession: null
+    currentSession: null,
+    createdCurrentSession: false
   });
   const bottomRef = useRef(null);
   const auth = useSelector(state => state.firebase.auth);
@@ -42,6 +43,7 @@ const Page: React.FC = () => {
   ]);
 
   const sessions = useSelector(state => state.firestore.ordered.sessions);
+  console.log(sessions);
   if (sessions !== undefined) {
     if (sessions.length === 1) {
       const currentSession = sessions[0];
@@ -54,7 +56,10 @@ const Page: React.FC = () => {
         status: "in progress",
         started: new Date().toISOString()
       };
-      firestore.add("sessions", currentSession);
+      if (!state.createdCurrentSession) {
+        firestore.add("sessions", currentSession);
+        setState({ ...state, createdCurrentSession: true });
+      }
     }
   }
 
