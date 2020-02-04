@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import Router from "next/router";
@@ -28,6 +28,7 @@ const Page: React.FC = () => {
     isLoading: true,
     currentSession: null
   });
+  const bottomRef = useRef(null);
   const auth = useSelector(state => state.firebase.auth);
   useFirestoreConnect([
     {
@@ -64,6 +65,14 @@ const Page: React.FC = () => {
     setState({ ...state, isLoading: !isLoaded(auth) });
   }, [auth]);
 
+  const scrollToBottom = () => {
+    bottomRef.current.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [state]);
+
   return (
     <>
       <Head>
@@ -73,12 +82,13 @@ const Page: React.FC = () => {
       {(state.isLoading || !state.currentSession) && <LoadingModal />}
       <div className="h-full w-full bg-indigo-100 flex flex-col">
         <BackTopBar currentSession={state.currentSession} />
-        <ScrollableFeed>
+        <ScrollableFeed forceScroll>
           <div className="h-full w-full flex flex-col px-6 pt-12">
             {state.currentSession && (
               <CharacterChooser currentSession={state.currentSession} />
             )}
           </div>
+          <div ref={bottomRef} />
         </ScrollableFeed>
       </div>
     </>
