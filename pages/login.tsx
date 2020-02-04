@@ -14,7 +14,7 @@ import LoadingModal from "../components/LoadingModal";
 
 const Page: React.FC = () => {
   const firebase = useFirebase();
-  const [state, setState] = useState({ isLoading: false });
+  const [state, setState] = useState({ isLoading: true });
   const auth = useSelector(state => state.firebase.auth);
   const profile = useSelector(state => state.firebase.profile);
 

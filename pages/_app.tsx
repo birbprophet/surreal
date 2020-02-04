@@ -19,7 +19,9 @@ class NextApp extends App {
     return (
       <Provider store={store}>
         <ReactReduxFirebaseProvider {...rrfProps}>
-          {["/", "/login", "/welcome"].includes(router.pathname) ? (
+          {["/", "/login", "/welcome", "/generate"].includes(
+            router.pathname
+          ) ? (
             <Div100vh>
               <Page {...pageProps}></Page>
             </Div100vh>

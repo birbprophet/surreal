@@ -1,0 +1,21 @@
+aws_access_key_id: AKIAJEGLELD7FFLAX2AA
+aws_secret_access_key: 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
+
+cluster_name: surreal01
+
+region: ap-southeast-1
+bucket: surreal01-bucket
+
+instance_type: p2.xlarge
+min_instances: 0
+max_instances: 100
+
+instance_volume_size: 50
+log_group: surreal01
+
+spot: true
+
+spot_config:
+    on_demand_base_capacity: 0
+    on_demand_percentage_above_base_capacity: 0
+    on_demand_backup: true

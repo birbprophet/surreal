@@ -1,10 +1,10 @@
 # WARNING: you are on the master branch, please refer to the examples on the branch that matches your `cortex version`
 
-- name: text-generator
+- name: surreal-1558m-48l
   predictor:
     type: tensorflow
     path: predictor.py
-    model: s3://surreal-models/text-generator/gpt-2/774M
+    model: s3://surreal-models/text-generator/gpt-2/1558M
   compute:
     cpu: 1
     gpu: 1

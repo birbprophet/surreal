@@ -8,7 +8,7 @@ import { isLoaded, isEmpty } from "react-redux-firebase";
 import LoadingModal from "../components/LoadingModal";
 
 const Page: React.FC = () => {
-  const [state, setState] = useState({ isLoading: false });
+  const [state, setState] = useState({ isLoading: true });
   const auth = useSelector(state => state.firebase.auth);
   const profile = useSelector(state => state.firebase.profile);
   useEffect(() => {

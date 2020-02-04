@@ -4,3 +4,7 @@ html, body {
   min-height: -webkit-fill-available, 100vh;
   max-width: 480px;
 }
+
+button:focus {
+  outline: none;
+}

@@ -29,8 +29,8 @@ const Page: React.FC = () => {
   const filesPath = "profilePictureUploads";
 
   const [state, setState] = useState({
-    isLoading: false,
-    pageNum: 1,
+    isLoading: true,
+    pageNum: 0,
     inputUsername: "",
     errorMessage: "",
     uploadingMessage: "No profile picture",

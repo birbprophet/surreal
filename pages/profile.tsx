@@ -11,7 +11,7 @@ import LoadingModal from "../components/LoadingModal";
 
 const Page: React.FC = () => {
   const firebase = useFirebase();
-  const [state, setState] = useState({ isLoading: false });
+  const [state, setState] = useState({ isLoading: true });
   const auth = useSelector(state => state.firebase.auth);
 
   const profile = useSelector(state => state.firebase.profile);
@@ -134,21 +134,21 @@ const ProfileSection = ({ profile, handleProfileDescriptionChange }) => {
       </div>
       <div className="flex w-full mt-8 mb-8">
         <div className="flex-1 text-center">
-          <div className="text-gray-400">Posts</div>
+          <div className="text-gray-400">Adventures</div>
           <div className="text-xl font-bold">
-            {profile.posts ? profile.posts.length : 0}
+            {profile.adventures ? profile.adventures.length : 0}
           </div>
         </div>
         <div className="flex-1 text-center">
-          <div className="text-gray-400">Followers</div>
+          <div className="text-gray-400">Friends</div>
           <div className="text-xl font-bold">
-            {profile.followers ? profile.followers.length : 0}
+            {profile.friends ? profile.friends.length : 0}
           </div>
         </div>
         <div className="flex-1 text-center">
-          <div className="text-gray-400">Follows</div>
+          <div className="text-gray-400">Characters</div>
           <div className="text-xl font-bold">
-            {profile.follows ? profile.follows.length : 0}
+            {profile.characters ? profile.characters.length : 0}
           </div>
         </div>
       </div>
