@@ -24,4 +24,4 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-/azure/functions/GPT2Api/models
+/python/generator/cortex.yaml
