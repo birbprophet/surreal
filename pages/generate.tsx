@@ -1,21 +1,17 @@
 import React, { useEffect, useState, useRef } from "react";
 import Head from "next/head";
-import Link from "next/link";
 import Router from "next/router";
 
-import { useSelector, useStore } from "react-redux";
+import { useSelector } from "react-redux";
 import { isLoaded, isEmpty, useFirestore } from "react-redux-firebase";
 import { useFirestoreConnect } from "react-redux-firebase";
 
 import algoliasearch from "algoliasearch/lite";
 
-import SVG from "react-inlinesvg";
 import TextTruncate from "react-text-truncate";
 import ScrollableFeed from "react-scrollable-feed";
 import {
-  FiArrowLeft,
   FiCornerDownLeft,
-  FiRotateCw,
   FiRefreshCw,
   FiSearch,
   FiX,
@@ -24,6 +20,7 @@ import {
 } from "react-icons/fi";
 
 import LoadingModal from "../components/LoadingModal";
+import BackTopBar from "../components/BackTopBar";
 
 const Page: React.FC = () => {
   const firestore = useFirestore();
@@ -86,7 +83,7 @@ const Page: React.FC = () => {
       {(state.isLoading || !state.currentSession) && <LoadingModal />}
       <div className="h-full w-full bg-indigo-100 flex flex-col">
         <BackTopBar currentSession={state.currentSession} />
-        <ScrollableFeed forceScroll>
+        <ScrollableFeed>
           <div className="w-full flex flex-col px-6 pt-12 pb-8">
             {state.currentSession && (
               <CharacterChooser currentSession={state.currentSession} />
@@ -473,45 +470,6 @@ const CharacterChooser: React.FC<{ currentSession: any }> = ({
         <ExistingCharacterSelector currentSession={currentSession} />
       )}
     </>
-  );
-};
-
-const BackTopBar: React.FC<{ currentSession: any }> = ({ currentSession }) => {
-  const firestore = useFirestore();
-
-  const handleRestartOnClick = option => {
-    if (currentSession && currentSession.id) {
-      firestore.update(`sessions/${currentSession.id}`, {
-        ended: new Date().toISOString(),
-        status: "cancelled"
-      });
-    }
-  };
-
-  return (
-    <div className="py-4 px-6 bg-white rounded-b-lg shadow-md flex">
-      <Link href="/create">
-        <button className="flex">
-          <FiArrowLeft size={20} className="text-gray-500" />
-          <div
-            className="text-lg ml-2 font-semibold text-gray-500"
-            style={{ lineHeight: "20px" }}
-          >
-            Back
-          </div>
-        </button>
-      </Link>
-      <div className="flex-1" />
-      <button className="flex" onClick={handleRestartOnClick}>
-        <div
-          className="text-lg mr-2 font-semibold text-gray-500"
-          style={{ lineHeight: "20px" }}
-        >
-          Restart Adventure
-        </div>
-        <FiRotateCw size={20} className="text-gray-500" />
-      </button>
-    </div>
   );
 };
 
