@@ -29,8 +29,7 @@ const Page: React.FC = () => {
   const firestore = useFirestore();
   const [state, setState] = useState({
     isLoading: true,
-    currentSession: null,
-    createdCurrentSession: false
+    currentSession: null
   });
   const bottomRef = useRef(null);
   const auth = useSelector(state => state.firebase.auth);
@@ -46,24 +45,22 @@ const Page: React.FC = () => {
   ]);
 
   const sessions = useSelector(state => state.firestore.ordered.sessions);
-  if (sessions !== undefined) {
-    if (sessions.length === 1) {
+
+  useEffect(() => {
+    if (sessions && sessions.length === 1) {
       const currentSession = sessions[0];
       if (currentSession !== state.currentSession) {
         setState({ ...state, currentSession });
-      }
-    } else {
-      const currentSession = {
-        user: auth.uid,
-        status: "in progress",
-        started: new Date().toISOString()
-      };
-      if (!state.createdCurrentSession) {
+      } else if (auth && auth.uid) {
+        const currentSession = {
+          user: auth.uid,
+          status: "in progress",
+          started: new Date().toISOString()
+        };
         firestore.add("sessions", currentSession);
-        setState({ ...state, createdCurrentSession: true });
       }
     }
-  }
+  }, [sessions, auth, state]);
 
   useEffect(() => {
     if (isLoaded(auth) && isEmpty(auth)) {
@@ -90,12 +87,13 @@ const Page: React.FC = () => {
       <div className="h-full w-full bg-indigo-100 flex flex-col">
         <BackTopBar currentSession={state.currentSession} />
         <ScrollableFeed forceScroll>
-          <div className="h-full w-full flex flex-col px-6 pt-12">
+          <div className="w-full flex flex-col px-6 pt-12 pb-8">
             {state.currentSession && (
               <CharacterChooser currentSession={state.currentSession} />
             )}
           </div>
-          <div ref={bottomRef} />
+
+          <div ref={bottomRef} className="w-full" />
         </ScrollableFeed>
       </div>
     </>
@@ -131,15 +129,39 @@ const RandomCharacterSelector: React.FC<{ currentSession: any }> = ({
         });
       }
     }
-  }, [currentSession]);
+  }, [currentSession, randomPoolCharacters]);
+
+  const handleRefreshOnClick = () => {
+    firestore.update(`sessions/${currentSession.id}`, {
+      character: null
+    });
+  };
 
   return (
     <div className="w-full bg-white p-6 mt-8 shadow-lg rounded-lg">
-      <div className="text-xl">Your random character is...</div>
-      <div className="text-4xl font-bold pr-4 pt-2 leading-tight">
-        {currentSession.character
-          ? currentSession.character.name
-          : "Loading..."}
+      <div className="text-xl text-center">Your random character is...</div>
+      <div className="text-4xl font-bold pr-4 pt-2 leading-tight h-24 flex">
+        <div className="m-auto text-center">
+          {currentSession.character
+            ? currentSession.character.name
+            : "Loading..."}
+        </div>
+      </div>
+      <div className="flex h-12 mt-6">
+        <div className="flex h-12 w-12 ml-6">
+          <button
+            className="bg-white border border-indigo-500 rounded-full py-2 text-xl font-semibold text-white h-10 w-10 flex m-auto"
+            onClick={handleRefreshOnClick}
+          >
+            <FiRefreshCw className="m-auto text-indigo-500" />
+          </button>
+        </div>
+
+        <div className="flex-1 px-6">
+          <button className="bg-indigo-500 rounded-full w-full py-2 text-xl font-semibold text-white">
+            Select
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -282,7 +304,7 @@ const ExistingCharacterSelector: React.FC<{ currentSession: any }> = ({
         )}
       </div>
       <div className="h-64 pr-4 pt-2">
-        <div className="flex text-4xl font-bold  leading-tight h-24">
+        <div className="flex text-4xl font-bold leading-tight h-24">
           <div className="m-auto text-center">
             {state.searchResults ? (
               state.searchResults.length > 0 ? (
@@ -351,7 +373,7 @@ const ExistingCharacterSelector: React.FC<{ currentSession: any }> = ({
           </div>
           <div className="flex-1 px-6">
             <button className="bg-indigo-500 rounded-full w-full py-2 text-xl font-semibold text-white">
-              Confirm
+              Select
             </button>
           </div>
           <div className="flex">
@@ -397,12 +419,6 @@ const CharacterChooser: React.FC<{ currentSession: any }> = ({
     });
   };
 
-  const handleRefreshOnClick = () => {
-    firestore.update(`sessions/${currentSession.id}`, {
-      character: null
-    });
-  };
-
   return (
     <>
       <div className="w-full bg-indigo-500 text-white p-6 rounded-lg shadow-lg">
@@ -437,24 +453,9 @@ const CharacterChooser: React.FC<{ currentSession: any }> = ({
           </div>
         )}
       </div>
-      {currentSession.characterSelectOption === "random" && (
-        <RandomCharacterSelector currentSession={currentSession} />
-      )}
-      {currentSession.characterSelectOption === "existing" && (
-        <ExistingCharacterSelector currentSession={currentSession} />
-      )}
       {currentSession.characterSelectOption &&
         !currentSession.characterConfirmed && (
           <div className="w-full flex flex-row px-2 pt-1">
-            {currentSession.characterSelectOption === "random" && (
-              <button
-                className="flex py-1 px-2 rounded-full"
-                onClick={handleRefreshOnClick}
-              >
-                <FiRefreshCw className="mt-1 mr-2" />
-                <div>Refresh</div>
-              </button>
-            )}
             <div className="flex-1" />
             <button
               className="flex py-1 px-2 rounded-full"
@@ -465,6 +466,12 @@ const CharacterChooser: React.FC<{ currentSession: any }> = ({
             </button>
           </div>
         )}
+      {currentSession.characterSelectOption === "random" && (
+        <RandomCharacterSelector currentSession={currentSession} />
+      )}
+      {currentSession.characterSelectOption === "existing" && (
+        <ExistingCharacterSelector currentSession={currentSession} />
+      )}
     </>
   );
 };
