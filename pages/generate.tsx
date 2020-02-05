@@ -3,13 +3,14 @@ import Head from "next/head";
 import Link from "next/link";
 import Router from "next/router";
 
-import { useSelector } from "react-redux";
+import { useSelector, useStore } from "react-redux";
 import { isLoaded, isEmpty, useFirestore } from "react-redux-firebase";
 import { useFirestoreConnect } from "react-redux-firebase";
 
 import algoliasearch from "algoliasearch/lite";
 
 import SVG from "react-inlinesvg";
+import TextTruncate from "react-text-truncate";
 import ScrollableFeed from "react-scrollable-feed";
 import {
   FiArrowLeft,
@@ -17,7 +18,9 @@ import {
   FiRotateCw,
   FiRefreshCw,
   FiSearch,
-  FiX
+  FiX,
+  FiChevronLeft,
+  FiChevronRight
 } from "react-icons/fi";
 
 import LoadingModal from "../components/LoadingModal";
@@ -43,7 +46,6 @@ const Page: React.FC = () => {
   ]);
 
   const sessions = useSelector(state => state.firestore.ordered.sessions);
-  console.log(sessions);
   if (sessions !== undefined) {
     if (sessions.length === 1) {
       const currentSession = sessions[0];
@@ -116,22 +118,20 @@ const RandomCharacterSelector: React.FC<{ currentSession: any }> = ({
     state => state.firestore.ordered.randomPoolCharacters
   );
 
-  if (currentSession && !currentSession.character) {
-    if (randomPoolCharacters && randomPoolCharacters.length > 0) {
-      const randomCharacter =
-        randomPoolCharacters[
-          Math.floor(Math.random() * randomPoolCharacters.length)
-        ];
+  useEffect(() => {
+    if (currentSession && !currentSession.character) {
+      if (randomPoolCharacters && randomPoolCharacters.length > 0) {
+        const randomCharacter =
+          randomPoolCharacters[
+            Math.floor(Math.random() * randomPoolCharacters.length)
+          ];
 
-      firestore.update(`characters/${randomCharacter.id}`, {
-        usedCount: randomCharacter.usedCount + 1
-      });
-
-      firestore.update(`sessions/${currentSession.id}`, {
-        character: randomCharacter
-      });
+        firestore.update(`sessions/${currentSession.id}`, {
+          character: randomCharacter
+        });
+      }
     }
-  }
+  }, [currentSession]);
 
   return (
     <div className="w-full bg-white p-6 mt-8 shadow-lg rounded-lg">
@@ -148,6 +148,8 @@ const RandomCharacterSelector: React.FC<{ currentSession: any }> = ({
 const ExistingCharacterSelector: React.FC<{ currentSession: any }> = ({
   currentSession
 }) => {
+  const firestore = useFirestore();
+
   const [state, setState] = useState({
     searchOpen: false,
     searchQuery: "",
@@ -155,6 +157,41 @@ const ExistingCharacterSelector: React.FC<{ currentSession: any }> = ({
     searchResults: null,
     currentPage: 0
   });
+  const currentCharacterId =
+    state.searchResults && state.searchResults.length > state.currentPage
+      ? state.searchResults[state.currentPage].objectID
+      : "";
+  useFirestoreConnect([
+    {
+      collection: "characters",
+      doc: currentCharacterId
+    }
+  ]);
+  const currentCharacter = useSelector(
+    ({ firestore: { ordered } }) => ordered.characters && ordered.characters[0]
+  );
+
+  if (
+    state.searchResults &&
+    state.searchResults.length > 0 &&
+    currentCharacter &&
+    currentCharacter !== currentSession.character
+  ) {
+    firestore.update(`sessions/${currentSession.id}`, {
+      character: currentCharacter
+    });
+  }
+
+  useEffect(() => {
+    if (state.searchResults && state.searchResults.length === 0) {
+      if (currentSession.character) {
+        firestore.update(`sessions/${currentSession.id}`, {
+          character: null
+        });
+      }
+    }
+  }, [state]);
+
   const algoliaClient = algoliasearch(
     "DEUJZ7BCVJ",
     "18131dcda2fb175f7095a147496e2df1"
@@ -168,7 +205,6 @@ const ExistingCharacterSelector: React.FC<{ currentSession: any }> = ({
           headers: { "X-Algolia-UserToken": currentSession.user }
         })
         .then(({ hits }) => {
-          console.log(hits);
           setState({
             ...state,
             searchResults: hits,
@@ -201,17 +237,40 @@ const ExistingCharacterSelector: React.FC<{ currentSession: any }> = ({
     });
   };
 
+  const handleNextPageOnClick = () => {
+    if (
+      state.searchResults &&
+      state.currentPage + 1 < state.searchResults.length
+    ) {
+      setState({ ...state, currentPage: state.currentPage + 1 });
+    }
+  };
+
+  const handlePrevPageOnClick = () => {
+    if (state.currentPage > 0) {
+      setState({ ...state, currentPage: state.currentPage - 1 });
+    }
+  };
+
   return (
     <div className="w-full bg-white p-6 mt-8 shadow-lg rounded-lg">
       <div className="flex">
         {!state.searchOpen && (
           <>
-            <div className="text-xl flex-1">Character Selection</div>
+            <div className="text-xl flex-1 text-gray-700">
+              Character Selection
+            </div>
             <FiSearch size={24} onClick={handleSearchOnClick} />
           </>
         )}
         {state.searchOpen && (
           <>
+            <FiSearch
+              size={20}
+              className={
+                "mt-1 mr-2 " + (state.searchQuery.length ? "" : "text-gray-500")
+              }
+            />
             <input
               className="text-xl flex-1 focus:outline-none"
               placeholder="Enter your query..."
@@ -222,25 +281,94 @@ const ExistingCharacterSelector: React.FC<{ currentSession: any }> = ({
           </>
         )}
       </div>
-
-      <div className="text-4xl font-bold pr-4 pt-2 leading-tight h-24">
-        {state.searchResults ? (
-          state.searchResults.length > 0 ? (
-            <div
-              dangerouslySetInnerHTML={{
-                __html: state.searchResults[
-                  state.currentPage
-                ]._highlightResult.name.value
-                  .replace(/<em>/g, '<span class="bg-indigo-100">')
-                  .replace(/<\/em>/g, "</span>")
-              }}
-            />
-          ) : (
-            "No Results"
-          )
-        ) : (
-          "Loading..."
-        )}
+      <div className="h-64 pr-4 pt-2">
+        <div className="flex text-4xl font-bold  leading-tight h-24">
+          <div className="m-auto text-center">
+            {state.searchResults ? (
+              state.searchResults.length > 0 ? (
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: state.searchResults[
+                      state.currentPage
+                    ]._highlightResult.name.value
+                      .replace(/<em>/g, '<span class="bg-indigo-100">')
+                      .replace(/<\/em>/g, "</span>")
+                  }}
+                />
+              ) : (
+                "No Results"
+              )
+            ) : (
+              "Loading..."
+            )}
+          </div>
+        </div>
+        <div className="flex mt-2 h-16">
+          <div className="text-lg text-center m-auto">
+            {currentSession.character ? (
+              state.searchResults &&
+              state.searchResults[state.currentPage] &&
+              currentSession.character.displayName ===
+                state.searchResults[state.currentPage].displayName ? (
+                <TextTruncate
+                  line={2}
+                  element="span"
+                  truncateText="…"
+                  text={`${currentSession.character.displayName} is ${
+                    ["a", "e", "i", "o", "u"].includes(
+                      currentSession.character.ofType.slice(0, 1)
+                    )
+                      ? "an"
+                      : "a"
+                  } ${currentSession.character.ofType} from ${
+                    currentSession.character.fromLocation
+                  }`}
+                />
+              ) : (
+                "Loading description..."
+              )
+            ) : state.searchResults ? (
+              <span className="text-gray-500">
+                No characters found.
+                <br />
+                Try a different query...
+              </span>
+            ) : (
+              "Loading description..."
+            )}
+          </div>
+        </div>
+        <div className="flex mt-6">
+          <div className="flex">
+            <button className="m-auto" onClick={handlePrevPageOnClick}>
+              <FiChevronLeft
+                size={32}
+                className={
+                  state.currentPage > 0 ? "text-gray-700" : "text-gray-200"
+                }
+              />
+            </button>
+          </div>
+          <div className="flex-1 px-6">
+            <button className="bg-indigo-500 rounded-full w-full py-2 text-xl font-semibold text-white">
+              Confirm
+            </button>
+          </div>
+          <div className="flex">
+            <button className="m-auto">
+              <FiChevronRight
+                size={32}
+                className={
+                  state.searchResults &&
+                  state.currentPage + 1 < state.searchResults.length
+                    ? "text-gray-700"
+                    : "text-gray-200"
+                }
+                onClick={handleNextPageOnClick}
+              />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -259,6 +387,13 @@ const CharacterChooser: React.FC<{ currentSession: any }> = ({
   const handleSelectionOnClick = option => {
     firestore.update(`sessions/${currentSession.id}`, {
       characterSelectOption: option
+    });
+  };
+
+  const handleUndoOnClick = option => {
+    handleSelectionOnClick(null);
+    firestore.update(`sessions/${currentSession.id}`, {
+      character: null
     });
   };
 
@@ -323,7 +458,7 @@ const CharacterChooser: React.FC<{ currentSession: any }> = ({
             <div className="flex-1" />
             <button
               className="flex py-1 px-2 rounded-full"
-              onClick={() => handleSelectionOnClick(null)}
+              onClick={handleUndoOnClick}
             >
               <FiCornerDownLeft className="mt-1 mr-1" />
               <div>Undo</div>
