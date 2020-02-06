@@ -14,6 +14,7 @@ import BackTopBar from "../components/BackTopBar";
 import CharacterChooser from "../components/CharacterChooser";
 import RandomCharacterSelector from "../components/RandomCharacterSelector";
 import ExistingCharacterSelector from "../components/ExistingCharacterSelector";
+import NewCharacterCreator from "../components/NewCharacterCreator";
 
 const Page: React.FC = () => {
   const firestore = useFirestore();
@@ -94,6 +95,9 @@ const Page: React.FC = () => {
                   <ExistingCharacterSelector
                     currentSession={state.currentSession}
                   />
+                )}
+                {state.currentSession.characterSelectOption === "new" && (
+                  <NewCharacterCreator currentSession={state.currentSession} />
                 )}
               </>
             )}

@@ -45,7 +45,7 @@ const Page: React.FC = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {state.isLoading && <LoadingModal />}
-      <div className="scrolling-touch overflow-scroll">
+      <div className="scrolling-auto">
         <div className="flex flex-col bg-white rounded-b-lg px-6 pt-6 shadow-lg">
           <TopBar handleLogout={handleLogout} />
           <ProfileSection
@@ -118,7 +118,7 @@ const ProfileSection = ({ profile, handleProfileDescriptionChange }) => {
           </div>
           <div className="mt-2">
             <input
-              className="appearance-none bg-transparent border-none w-full py-1 text-center text-gray-400 focus:outline-none"
+              className="appearance-none bg-transparent border-none w-full py-1 text-center text-gray-400 focus:outline-none text-lg"
               type="text"
               aria-label="username"
               value={

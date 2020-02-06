@@ -27,7 +27,7 @@ const Page: React.FC = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {state.isLoading && <LoadingModal />}
-      <div className="scrolling-touch overflow-scroll">
+      <div className="scrolling-touch">
         <div className="flex flex-col bg-white rounded-b-lg px-6 pt-6 shadow-lg"></div>
       </div>
     </>

@@ -47,8 +47,14 @@ const Component: React.FC = () => {
 
   return (
     <>
-      <div className="absolute top-0 h-full w-full bg-white opacity-75 z-10"></div>
-      <div className="absolute flex-1 flex h-full w-full z-20">
+      <div
+        className="absolute top-0 h-full w-full bg-white opacity-75 z-10"
+        style={{ maxWidth: "480px" }}
+      ></div>
+      <div
+        className="absolute flex-1 flex h-full w-full z-20"
+        style={{ maxWidth: "480px" }}
+      >
         <motion.div
           style={loadingContainer}
           variants={loadingContainerVariants}
