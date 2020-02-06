@@ -50,7 +50,7 @@ const RandomCharacterSelector: React.FC<{ currentSession: any }> = ({
 
   return (
     <>
-      <div className="w-full bg-white p-6 mt-8 shadow-lg rounded-lg">
+      <div className="w-full bg-white p-6 shadow-lg rounded-lg">
         <div className="text-xl text-center">Your random character is...</div>
         <div className="text-4xl font-bold pr-4 pt-2 leading-tight h-24 flex">
           <div className="m-auto text-center">

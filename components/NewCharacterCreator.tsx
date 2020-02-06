@@ -7,7 +7,13 @@ import { useFirestoreConnect } from "react-redux-firebase";
 import algoliasearch from "algoliasearch/lite";
 
 import TextTruncate from "react-text-truncate";
-import { FiSearch, FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import {
+  FiSearch,
+  FiX,
+  FiChevronLeft,
+  FiChevronRight,
+  FiCornerDownLeft
+} from "react-icons/fi";
 
 import CharacterSelectButton from "./subcomponents/CharacterSelectButton";
 import CharacterSelectBottomUndo from "./subcomponents/CharacterSelectBottomUndo";
@@ -147,16 +153,27 @@ const NewCharacterCreator: React.FC<{ currentSession: any }> = ({
     }
   };
 
+  const handleUndoOnClick = () => {
+    if (state.createdCharacterId) {
+      firestore.delete(`characters/${state.createdCharacterId}`);
+    }
+
+    firestore.update(`sessions/${currentSession.id}`, {
+      characterConfirmed: false,
+      character: null
+    });
+  };
+
   return (
     <>
-      <div className="w-full bg-white p-6 mt-8 shadow-lg rounded-lg flex flex-col">
+      <div className="w-full bg-white p-6 shadow-lg rounded-lg flex flex-col">
         <div>
           <div className="text-2xl font-semibold">
             {state.createdCharacterId
               ? "Character Created"
               : "Character Creation"}
           </div>
-          {currentSession.character && (
+          {currentSession.character && currentSession.characterConfirmed && (
             <>
               <div className="text-4xl font-bold pr-4 pt-2 leading-tight flex mt-4">
                 <div className="m-auto text-center">
@@ -189,7 +206,7 @@ const NewCharacterCreator: React.FC<{ currentSession: any }> = ({
               </div>
             </>
           )}
-          {!state.createdCharacterId && (
+          {!currentSession.characterConfirmed && (
             <>
               <div className="h-24">
                 {inputOrder[state.pageNum] === "name" && (
@@ -293,6 +310,20 @@ const NewCharacterCreator: React.FC<{ currentSession: any }> = ({
           )}
         </div>
       </div>
+      {currentSession.characterConfirmed ? (
+        <div className="w-full flex flex-row px-2 pt-1">
+          <div className="flex-1" />
+          <button
+            className="flex py-1 px-2 rounded-full"
+            onClick={handleUndoOnClick}
+          >
+            <FiCornerDownLeft className="mt-1 mr-1" />
+            <div>Undo</div>
+          </button>
+        </div>
+      ) : (
+        <></>
+      )}
     </>
   );
 };

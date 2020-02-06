@@ -19,10 +19,10 @@ const CharacterChooser: React.FC<{ currentSession: any }> = ({
     });
   };
 
-  const handleUndoOnClick = option => {
-    handleSelectionOnClick(null);
+  const handleUndoOnClick = () => {
     firestore.update(`sessions/${currentSession.id}`, {
-      character: null
+      character: null,
+      characterSelectOption: null
     });
   };
 

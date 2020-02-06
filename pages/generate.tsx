@@ -15,6 +15,7 @@ import CharacterChooser from "../components/CharacterChooser";
 import RandomCharacterSelector from "../components/RandomCharacterSelector";
 import ExistingCharacterSelector from "../components/ExistingCharacterSelector";
 import NewCharacterCreator from "../components/NewCharacterCreator";
+import AdventureOptionPicker from "../components/AdventureOptionPicker";
 
 const Page: React.FC = () => {
   const firestore = useFirestore();
@@ -81,11 +82,11 @@ const Page: React.FC = () => {
       {(state.isLoading || !state.currentSession) && <LoadingModal />}
       <div className="h-full w-full bg-indigo-100 flex flex-col">
         <BackTopBar currentSession={state.currentSession} />
-        <ScrollableFeed>
-          <div className="w-full flex flex-col px-6 pt-12 pb-8">
-            {state.currentSession && (
-              <>
-                <CharacterChooser currentSession={state.currentSession} />
+        <ScrollableFeed className="w-full flex flex-col px-6 pt-12 pb-12">
+          {state.currentSession && (
+            <>
+              <CharacterChooser currentSession={state.currentSession} />
+              <div className="mt-8">
                 {state.currentSession.characterSelectOption === "random" && (
                   <RandomCharacterSelector
                     currentSession={state.currentSession}
@@ -99,9 +100,16 @@ const Page: React.FC = () => {
                 {state.currentSession.characterSelectOption === "new" && (
                   <NewCharacterCreator currentSession={state.currentSession} />
                 )}
-              </>
-            )}
-          </div>
+              </div>
+              {state.currentSession?.characterConfirmed && (
+                <div className="mt-8">
+                  <AdventureOptionPicker
+                    currentSession={state.currentSession}
+                  />
+                </div>
+              )}
+            </>
+          )}
 
           <div ref={bottomRef} className="w-full" />
         </ScrollableFeed>

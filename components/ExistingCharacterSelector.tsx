@@ -38,16 +38,18 @@ const ExistingCharacterSelector: React.FC<{ currentSession: any }> = ({
     ({ firestore: { ordered } }) => ordered.characters && ordered.characters[0]
   );
 
-  if (
-    state.searchResults &&
-    state.searchResults.length > 0 &&
-    currentCharacter &&
-    currentCharacter !== currentSession.character
-  ) {
-    firestore.update(`sessions/${currentSession.id}`, {
-      character: currentCharacter
-    });
-  }
+  useEffect(() => {
+    if (
+      state.searchResults &&
+      state.searchResults.length > 0 &&
+      currentCharacter &&
+      currentCharacter !== currentSession.character
+    ) {
+      firestore.update(`sessions/${currentSession.id}`, {
+        character: currentCharacter
+      });
+    }
+  }, [state, currentCharacter, currentSession]);
 
   useEffect(() => {
     if (state.searchResults && state.searchResults.length === 0) {
@@ -122,32 +124,50 @@ const ExistingCharacterSelector: React.FC<{ currentSession: any }> = ({
 
   return (
     <>
-      <div className="w-full bg-white p-6 mt-8 shadow-lg rounded-lg">
+      <div className="w-full bg-white p-6 shadow-lg rounded-lg">
         <div className="flex">
           {!state.searchOpen && (
             <>
               <div className="text-xl flex-1 text-gray-700">
-                Character Selection
+                {!currentSession?.characterConfirmed
+                  ? "Character Selection"
+                  : "Character Selected"}
               </div>
-              <FiSearch size={24} onClick={handleSearchOnClick} />
+              {!currentSession?.characterConfirmed ? (
+                <FiSearch size={24} onClick={handleSearchOnClick} />
+              ) : (
+                <FiX size={24} className="text-gray-500" />
+              )}
             </>
           )}
           {state.searchOpen && (
             <>
-              <FiSearch
-                size={20}
-                className={
-                  "mt-1 mr-2 " +
-                  (state.searchQuery.length ? "" : "text-gray-500")
-                }
-              />
+              {!currentSession?.characterConfirmed ? (
+                <FiSearch
+                  size={20}
+                  className={
+                    "mt-1 mr-2 " +
+                    (state.searchQuery.length ? "" : "text-gray-500")
+                  }
+                />
+              ) : (
+                <></>
+              )}
               <input
                 className="text-xl flex-1 focus:outline-none"
                 placeholder="Enter your query..."
                 onChange={handleSearchInputOnChange}
-                value={state.searchQuery}
+                value={
+                  !currentSession?.characterConfirmed
+                    ? state.searchQuery
+                    : "Character Selected"
+                }
               />
-              <FiX size={24} onClick={handleSearchCancelOnClick} />
+              {!currentSession?.characterConfirmed ? (
+                <FiX size={24} onClick={handleSearchCancelOnClick} />
+              ) : (
+                <FiX size={24} className="text-gray-500" />
+              )}
             </>
           )}
         </div>
