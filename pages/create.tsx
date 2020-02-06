@@ -52,7 +52,7 @@ const Page: React.FC = () => {
       </Head>
       {state.isLoading && <LoadingModal />}
       <div className="flex h-full w-full p-8">
-        <div className="h-full w-full flex bg-white shadow-md rounded-lg p-8">
+        <div className="h-full w-full flex bg-white shadow-md rounded-lg px-8 pt-12 pb-8">
           <div className="m-auto flex flex-col">
             <SVG src="./svgs/undraw_void_3ggu.svg" className="w-full h-40" />
             <div className="text-center text-3xl font-bold mt-8 text-indigo-900">
