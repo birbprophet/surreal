@@ -4,19 +4,12 @@ import { useSelector } from "react-redux";
 import { useFirestore } from "react-redux-firebase";
 import { useFirestoreConnect } from "react-redux-firebase";
 
-import algoliasearch from "algoliasearch/lite";
-
 import TextTruncate from "react-text-truncate";
 import {
-  FiSearch,
-  FiX,
   FiChevronLeft,
   FiChevronRight,
   FiCornerDownLeft
 } from "react-icons/fi";
-
-import CharacterSelectButton from "./subcomponents/CharacterSelectButton";
-import CharacterSelectBottomUndo from "./subcomponents/CharacterSelectBottomUndo";
 
 const NewCharacterCreator: React.FC<{ currentSession: any }> = ({
   currentSession

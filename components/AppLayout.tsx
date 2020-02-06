@@ -11,7 +11,9 @@ interface IProps {
 const Layout: React.FC<IProps> = ({ children, routerPath }) => {
   return (
     <div className="flex flex-col h-full">
-      <main className="flex-grow bg-indigo-100">{children}</main>
+      <main className="flex-grow bg-indigo-100 overflow-y-auto">
+        {children}
+      </main>
       <TabBar routerPath={routerPath} />
     </div>
   );
@@ -19,7 +21,10 @@ const Layout: React.FC<IProps> = ({ children, routerPath }) => {
 
 const TabBar: React.FC<IProps> = ({ routerPath }) => {
   return (
-    <footer className="sticky bottom-0 flex flex-row bg-white h-16 shadow-xl">
+    <footer
+      className="sticky bottom-0 flex flex-row bg-white h-16 shadow-xl"
+      style={{ minHeight: "64px" }}
+    >
       <TabItem path="/home" routerPath={routerPath}>
         <FiHome />
       </TabItem>

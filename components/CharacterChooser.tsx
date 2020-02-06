@@ -42,7 +42,7 @@ const CharacterChooser: React.FC<{ currentSession: any }> = ({
             {Object.keys(characterOptions).map(key => {
               return (
                 <button
-                  className="bg-white text-indigo-600 p-2 text-xl rounded-full font-semibold mb-3"
+                  className="bg-indigo-500 text-white border border-white p-2 text-xl rounded-full font-semibold mb-3"
                   onClick={() => handleSelectionOnClick(key)}
                   key={key}
                 >
@@ -54,9 +54,24 @@ const CharacterChooser: React.FC<{ currentSession: any }> = ({
         )}
         {currentSession.characterSelectOption && (
           <div className="flex flex-col mt-8">
-            <button className="bg-green-200 text-green-900 p-2 text-xl rounded-full font-bold mb-3">
-              {characterOptions[currentSession.characterSelectOption]}
-            </button>
+            {Object.keys(characterOptions).map(key => {
+              if (key === currentSession.characterSelectOption) {
+                return (
+                  <button className="bg-white text-indigo-500 border border-white p-2 text-xl rounded-full font-semibold mb-3">
+                    {characterOptions[key]}
+                  </button>
+                );
+              } else {
+                return (
+                  <button
+                    className="bg-indigo-500 text-white border border-white p-2 text-xl rounded-full font-semibold mb-3"
+                    key={key}
+                  >
+                    {characterOptions[key]}
+                  </button>
+                );
+              }
+            })}
           </div>
         )}
       </div>

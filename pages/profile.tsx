@@ -3,18 +3,43 @@ import Head from "next/head";
 import Router from "next/router";
 
 import { useSelector } from "react-redux";
-import { useFirebase, isLoaded, isEmpty } from "react-redux-firebase";
+import {
+  useFirebase,
+  isLoaded,
+  isEmpty,
+  useFirestore,
+  useFirestoreConnect
+} from "react-redux-firebase";
 
 import { FiMenu } from "react-icons/fi";
+import { ScrollingProvider, Section } from "react-scroll-section";
 
 import LoadingModal from "../components/LoadingModal";
 
 const Page: React.FC = () => {
   const firebase = useFirebase();
+  const firestore = useFirestore();
   const [state, setState] = useState({ isLoading: true });
   const auth = useSelector(state => state.firebase.auth);
-
   const profile = useSelector(state => state.firebase.profile);
+
+  useFirestoreConnect([
+    {
+      collection: "characters",
+      storeAs: "userCharacters",
+      where: [
+        [
+          "createdBy",
+          "==",
+          !state.isLoading && auth && auth.uid ? auth.uid : "NO_UID"
+        ]
+      ]
+    }
+  ]);
+
+  const userCharacters = useSelector(
+    state => state.firestore.ordered.userCharacters
+  );
 
   useEffect(() => {
     if (isLoaded(auth) && isEmpty(auth)) {
@@ -45,19 +70,24 @@ const Page: React.FC = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {state.isLoading && <LoadingModal />}
-      <div className="scrolling-auto">
-        <div className="flex flex-col bg-white rounded-b-lg px-6 pt-6 shadow-lg">
-          <TopBar handleLogout={handleLogout} />
-          <ProfileSection
-            profile={profile}
-            handleProfileDescriptionChange={handleProfileDescriptionChange}
-          />
-        </div>
-        {profile.posts && !profile.posts.length && (
-          <div className="flex">
-            <div className="m-auto">No posts yet</div>
-          </div>
-        )}
+      <div className="flex flex-col bg-white rounded-b-lg px-6 pt-6 shadow-lg">
+        <TopBar handleLogout={handleLogout} />
+        <ProfileSection
+          profile={profile}
+          handleProfileDescriptionChange={handleProfileDescriptionChange}
+        />
+      </div>
+      <div className="flex flex-col p-6">
+        {userCharacters &&
+          userCharacters.length &&
+          userCharacters.map(character => (
+            <div
+              key={character.id}
+              className="bg-white rounded-lg shadow-md w-full p-6"
+            >
+              {character.name}
+            </div>
+          ))}
       </div>
     </>
   );
@@ -139,12 +169,12 @@ const ProfileSection = ({ profile, handleProfileDescriptionChange }) => {
             {profile.adventures ? profile.adventures.length : 0}
           </div>
         </div>
-        <div className="flex-1 text-center">
+        {/* <div className="flex-1 text-center">
           <div className="text-gray-400">Friends</div>
           <div className="text-xl font-bold">
             {profile.friends ? profile.friends.length : 0}
           </div>
-        </div>
+        </div> */}
         <div className="flex-1 text-center">
           <div className="text-gray-400">Characters</div>
           <div className="text-xl font-bold">

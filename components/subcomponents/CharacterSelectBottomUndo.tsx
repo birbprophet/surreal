@@ -11,7 +11,8 @@ const CharacterSelectBottomUndo: React.FC<{ currentSession: any }> = ({
       characterConfirmed: false
     });
   };
-  return currentSession.characterConfirmed ? (
+  return currentSession.characterConfirmed &&
+    !currentSession.adventureOption ? (
     <div className="w-full flex flex-row px-2 pt-1">
       <div className="flex-1" />
       <button

@@ -71,7 +71,8 @@ const ExistingCharacterSelector: React.FC<{ currentSession: any }> = ({
     if (!state.querySearched) {
       charactersIndex
         .search(state.searchQuery, {
-          headers: { "X-Algolia-UserToken": currentSession.user }
+          headers: { "X-Algolia-UserToken": currentSession.user },
+          filters: "isPublic:true"
         })
         .then(({ hits }) => {
           setState({
