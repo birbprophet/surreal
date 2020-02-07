@@ -19,7 +19,7 @@ const RandomCharacterSelector: React.FC<{ currentSession: any }> = ({
     {
       collection: "characters",
       storeAs: "randomPoolCharacters",
-      where: ["inRandomPool", "==", true]
+      where: ["isPublic", "==", true]
     }
   ]);
 

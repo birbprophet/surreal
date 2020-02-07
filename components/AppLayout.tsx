@@ -25,9 +25,9 @@ const TabBar: React.FC<IProps> = ({ routerPath }) => {
       className="sticky bottom-0 flex flex-row bg-white h-16 shadow-xl"
       style={{ minHeight: "64px" }}
     >
-      <TabItem path="/home" routerPath={routerPath}>
+      {/* <TabItem path="/home" routerPath={routerPath}>
         <FiHome />
-      </TabItem>
+      </TabItem> */}
       <TabItem path="/create" routerPath={routerPath}>
         <FiPlusCircle className="text-2xl text-indigo-900" />
       </TabItem>

@@ -16,7 +16,7 @@ const ExistingCharacterSelector: React.FC<{ currentSession: any }> = ({
   currentSession
 }) => {
   const firestore = useFirestore();
-
+  const auth = useSelector(state => state.firebase.auth);
   const [state, setState] = useState({
     searchOpen: false,
     searchQuery: "",
@@ -68,11 +68,11 @@ const ExistingCharacterSelector: React.FC<{ currentSession: any }> = ({
   const charactersIndex = algoliaClient.initIndex("surreal_characters");
 
   useEffect(() => {
-    if (!state.querySearched) {
+    if (!state.querySearched && auth?.uid) {
       charactersIndex
         .search(state.searchQuery, {
           headers: { "X-Algolia-UserToken": currentSession.user },
-          filters: "isPublic:true"
+          filters: `isPublic:true OR createdBy:${auth.uid}`
         })
         .then(({ hits }) => {
           setState({
@@ -82,7 +82,7 @@ const ExistingCharacterSelector: React.FC<{ currentSession: any }> = ({
           });
         });
     }
-  }, [state]);
+  }, [state, auth]);
 
   const handleSearchOnClick = () => {
     setState({ ...state, searchOpen: true });

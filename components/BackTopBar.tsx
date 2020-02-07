@@ -1,19 +1,35 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 
 import { useFirestore } from "react-redux-firebase";
 
 import { FiArrowLeft, FiRotateCw } from "react-icons/fi";
 
-const BackTopBar: React.FC<{ currentSession: any }> = ({ currentSession }) => {
+const BackTopBar: React.FC<{ currentSession: any, currentAdventure: any }> = ({
+  currentSession,
+  currentAdventure
+}) => {
   const firestore = useFirestore();
 
+  useEffect(() => {
+    if (!currentSession && currentAdventure) {
+      if (currentAdventure && currentAdventure?.id) {
+        firestore.update(`adventures/${currentAdventure.id}`, {
+          ended: new Date().toISOString(),
+          status: "cancelled"
+        });
+      }
+    }
+  }, [currentSession, currentAdventure]);
+
   const handleRestartOnClick = option => {
-    if (currentSession && currentSession.id) {
-      firestore.update(`sessions/${currentSession.id}`, {
-        ended: new Date().toISOString(),
-        status: "cancelled"
-      });
+    if (currentSession && currentSession?.id) {
+      firestore
+        .update(`sessions/${currentSession.id}`, {
+          ended: new Date().toISOString(),
+          status: "cancelled"
+        })
+        .then(() => {});
     }
   };
 

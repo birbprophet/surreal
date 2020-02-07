@@ -57,7 +57,10 @@ const CharacterChooser: React.FC<{ currentSession: any }> = ({
             {Object.keys(characterOptions).map(key => {
               if (key === currentSession.characterSelectOption) {
                 return (
-                  <button className="bg-white text-indigo-500 border border-white p-2 text-xl rounded-full font-semibold mb-3">
+                  <button
+                    className="bg-white text-indigo-500 border border-white p-2 text-xl rounded-full font-semibold mb-3"
+                    key={key}
+                  >
                     {characterOptions[key]}
                   </button>
                 );

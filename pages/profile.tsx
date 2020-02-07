@@ -12,14 +12,18 @@ import {
 } from "react-redux-firebase";
 
 import { FiMenu } from "react-icons/fi";
-import { ScrollingProvider, Section } from "react-scroll-section";
+import TextTruncate from "react-text-truncate";
 
 import LoadingModal from "../components/LoadingModal";
+import Link from "next/link";
 
 const Page: React.FC = () => {
   const firebase = useFirebase();
-  const firestore = useFirestore();
-  const [state, setState] = useState({ isLoading: true });
+
+  const [state, setState] = useState({
+    isLoading: true,
+    currentView: "adventures"
+  });
   const auth = useSelector(state => state.firebase.auth);
   const profile = useSelector(state => state.firebase.profile);
 
@@ -39,6 +43,24 @@ const Page: React.FC = () => {
 
   const userCharacters = useSelector(
     state => state.firestore.ordered.userCharacters
+  );
+
+  useFirestoreConnect([
+    {
+      collection: "adventures",
+      storeAs: "userAdventures",
+      where: [
+        [
+          "createdBy",
+          "==",
+          !state.isLoading && auth && auth.uid ? auth.uid : "NO_UID"
+        ]
+      ]
+    }
+  ]);
+
+  const userAdventures = useSelector(
+    state => state.firestore.ordered.userAdventures
   );
 
   useEffect(() => {
@@ -63,6 +85,10 @@ const Page: React.FC = () => {
     });
   };
 
+  const handleViewChange = view => {
+    setState({ ...state, currentView: view });
+  };
+
   return (
     <>
       <Head>
@@ -75,21 +101,119 @@ const Page: React.FC = () => {
         <ProfileSection
           profile={profile}
           handleProfileDescriptionChange={handleProfileDescriptionChange}
+          userCharacters={userCharacters}
+          userAdventures={userAdventures}
+          handleViewChange={handleViewChange}
+          state={state}
         />
       </div>
       <div className="flex flex-col p-6">
-        {userCharacters &&
+        {state.currentView === "adventures" &&
+          userAdventures &&
+          !userAdventures.length && (
+            <div className="text-center w-full mt-2 flex flex-col">
+              <i>No adventures yet...</i>
+              <Link href="/generate">
+                <button className="text-xl p-2 mx-4 mt-4 bg-white font-semibold rounded-full shadow-md text-indigo-700">
+                  Start your first adventure
+                </button>
+              </Link>
+            </div>
+          )}
+        {state.currentView === "characters" &&
+          userCharacters &&
           userCharacters.length &&
           userCharacters.map(character => (
-            <div
-              key={character.id}
-              className="bg-white rounded-lg shadow-md w-full p-6"
-            >
-              {character.name}
+            <div key={character.id} className="mb-4">
+              <CharacterCard character={character} />
             </div>
           ))}
+        {state.currentView === "characters" &&
+          userCharacters &&
+          !userCharacters.length && (
+            <div className="text-center w-full mt-2 flex flex-col">
+              <i>No characters yet...</i>
+              <Link href="/generate">
+                <button className="text-xl p-2 mx-4 mt-4 bg-white font-semibold rounded-full shadow-md text-indigo-700">
+                  Start your first adventure
+                </button>
+              </Link>
+            </div>
+          )}
       </div>
     </>
+  );
+};
+
+const CharacterCard = ({ character }) => {
+  const firestore = useFirestore();
+  const handleOnPublicClick = () => {
+    if (!character?.isPublic) {
+      firestore.update(`characters/${character.id}`, {
+        isPublic: true
+      });
+    }
+  };
+
+  const handleOnPrivateClick = () => {
+    if (character?.isPublic) {
+      firestore.update(`characters/${character.id}`, {
+        isPublic: false
+      });
+    }
+  };
+
+  const handleOnDeleteClick = () => {
+    firestore.delete(`characters/${character.id}`);
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-md w-full p-6">
+      <div className="text-xl font-semibold">{character.name}</div>
+      <div className="h-16 mt-2">
+        <TextTruncate
+          line={2}
+          element="span"
+          truncateText="…"
+          text={`${character.displayName} is ${
+            ["a", "e", "i", "o", "u"].includes(character.ofType.slice(0, 1))
+              ? "an"
+              : "a"
+          } ${character.ofType} from ${character.fromLocation}`}
+        />
+      </div>
+      <div className="flex">
+        <div
+          className={
+            "w-16 rounded-l-sm text-center border border-indigo-500 cursor-pointer " +
+            (character.isPublic
+              ? "bg-indigo-500 text-white"
+              : "bg-white text-indigo-500")
+          }
+          onClick={handleOnPublicClick}
+        >
+          Public
+        </div>
+        <div
+          className={
+            "w-16 rounded-r-sm border border-indigo-500 text-center cursor-pointer " +
+            (!character.isPublic
+              ? "bg-indigo-500 text-white"
+              : "bg-white text-indigo-500")
+          }
+          onClick={handleOnPrivateClick}
+        >
+          Private
+        </div>
+        <div className="flex-1" />
+        <div
+          className="w-16 rounded-sm border border-red-500 text-center cursor-pointer text-red-500"
+          onClick={handleOnDeleteClick}
+        >
+          Delete
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -125,7 +249,14 @@ const TopBar = ({ handleLogout }) => {
   );
 };
 
-const ProfileSection = ({ profile, handleProfileDescriptionChange }) => {
+const ProfileSection = ({
+  profile,
+  handleProfileDescriptionChange,
+  userCharacters,
+  userAdventures,
+  handleViewChange,
+  state
+}) => {
   return (
     <>
       <div className="flex w-full">
@@ -162,11 +293,19 @@ const ProfileSection = ({ profile, handleProfileDescriptionChange }) => {
           </div>
         </div>
       </div>
-      <div className="flex w-full mt-8 mb-8">
-        <div className="flex-1 text-center">
-          <div className="text-gray-400">Adventures</div>
-          <div className="text-xl font-bold">
-            {profile.adventures ? profile.adventures.length : 0}
+      <div className="flex w-full my-4">
+        <div
+          className={
+            "flex-1 text-center py-2 mx-4 cursor-pointer " +
+            (state.currentView === "adventures"
+              ? "text-indigo-700 border border-indigo-700 rounded"
+              : "text-gray-400")
+          }
+          onClick={() => handleViewChange("adventures")}
+        >
+          <div className="">Adventures</div>
+          <div className="text-xl font-bold text-black">
+            {userAdventures ? userAdventures.length : 0}
           </div>
         </div>
         {/* <div className="flex-1 text-center">
@@ -175,10 +314,18 @@ const ProfileSection = ({ profile, handleProfileDescriptionChange }) => {
             {profile.friends ? profile.friends.length : 0}
           </div>
         </div> */}
-        <div className="flex-1 text-center">
-          <div className="text-gray-400">Characters</div>
-          <div className="text-xl font-bold">
-            {profile.characters ? profile.characters.length : 0}
+        <div
+          className={
+            "flex-1 text-center py-2 mx-4 cursor-pointer " +
+            (state.currentView === "characters"
+              ? "text-indigo-700 border border-indigo-700 rounded"
+              : "text-gray-400")
+          }
+          onClick={() => handleViewChange("characters")}
+        >
+          <div className="">Characters</div>
+          <div className="text-xl font-bold text-black">
+            {userCharacters ? userCharacters.length : 0}
           </div>
         </div>
       </div>

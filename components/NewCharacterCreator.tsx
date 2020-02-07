@@ -133,7 +133,6 @@ const NewCharacterCreator: React.FC<{ currentSession: any }> = ({
       const characterEntry = {
         ...state.characterDetails,
         isPublic: false,
-        inRandomPool: false,
         usedCount: 0,
         createdBy: auth.uid
       };

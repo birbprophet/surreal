@@ -12,7 +12,7 @@ const Page: React.FC = () => {
 
   useEffect(() => {
     if (isLoaded(auth) && !isEmpty(auth)) {
-      Router.push("/home");
+      Router.push("/create");
     } else if (isLoaded(auth) && isEmpty(auth)) {
       Router.push("/login");
     }
