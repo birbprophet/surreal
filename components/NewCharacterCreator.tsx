@@ -382,16 +382,16 @@ const OfTypeInputSection: React.FC<{
   return (
     <>
       <div className="mt-4">
-        <div className="text-lg">{`${state.characterDetails.displayName} is...`}</div>
+        <div className="text-lg">{`${state.characterDetails.displayName} is a/an...`}</div>
       </div>
       <div className="mt-4">
         <input
           type="text"
           className="text-xl border-b border-gray-500 w-full"
-          maxLength={24}
+          maxLength={36}
           onChange={handleChange}
           value={state.characterDetails[inputField] || ""}
-          placeholder="e.g. a sentient locomotive"
+          placeholder="e.g. sentient locomotive"
         />
         <div className="text-white mt-2">
           <i>* case-sensitive</i>
@@ -415,7 +415,7 @@ const FromLocationInputSection: React.FC<{
         <input
           type="text"
           className="text-xl border-b border-gray-500 w-full"
-          maxLength={24}
+          maxLength={36}
           onChange={handleChange}
           value={state.characterDetails[inputField] || ""}
           placeholder="e.g. the train station"

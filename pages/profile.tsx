@@ -54,7 +54,8 @@ const Page: React.FC = () => {
           "createdBy",
           "==",
           !state.isLoading && auth && auth.uid ? auth.uid : "NO_UID"
-        ]
+        ],
+        ["status", "==", "completed"]
       ]
     }
   ]);
@@ -110,6 +111,14 @@ const Page: React.FC = () => {
       <div className="flex flex-col p-6">
         {state.currentView === "adventures" &&
           userAdventures &&
+          userAdventures.length &&
+          userAdventures.map(adventure => (
+            <div key={adventure.id} className="mb-4">
+              <AdventureCard adventure={adventure} />
+            </div>
+          ))}
+        {state.currentView === "adventures" &&
+          userAdventures &&
           !userAdventures.length && (
             <div className="text-center w-full mt-2 flex flex-col">
               <i>No adventures yet...</i>
@@ -142,6 +151,30 @@ const Page: React.FC = () => {
           )}
       </div>
     </>
+  );
+};
+
+const AdventureCard = ({ adventure }) => {
+  const firestore = useFirestore();
+  const handleOnDeleteClick = () => {
+    firestore.delete(`characters/${adventure.id}`);
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-md w-full p-6">
+      <div className="flex">
+        <div className="text-xl font-semibold">
+          {adventure.sessions[0].character.name}
+        </div>
+        <div className="flex-1" />
+        <div
+          className="w-16 rounded-sm border border-red-500 text-center cursor-pointer text-red-500"
+          onClick={handleOnDeleteClick}
+        >
+          Delete
+        </div>
+      </div>
+    </div>
   );
 };
 

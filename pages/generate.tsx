@@ -157,6 +157,22 @@ const Page: React.FC = () => {
     scrollToBottom();
   }, [state]);
 
+  const handleAdventureEndOnClick = () => {
+    if (state.currentSession && state.currentSession?.id) {
+      firestore
+        .update(`adventures/${state.currentAdventure.id}`, {
+          ended: new Date().toISOString(),
+          status: "completed"
+        })
+        .then(() => {
+          firestore.update(`sessions/${state.currentSession.id}`, {
+            ended: new Date().toISOString(),
+            status: "completed"
+          });
+        });
+    }
+  };
+
   return (
     <>
       <Head>
@@ -169,7 +185,7 @@ const Page: React.FC = () => {
           currentSession={state.currentSession}
           currentAdventure={state.currentAdventure}
         />
-        <ScrollableFeed className="w-full flex flex-col px-6 pt-12 pb-12">
+        <ScrollableFeed className="w-full flex flex-col px-6 pt-12 pb-8">
           {state.currentSession && (
             <>
               <CharacterChooser currentSession={state.currentSession} />
@@ -234,7 +250,18 @@ const Page: React.FC = () => {
                   ))}
             </>
           )}
-
+          {state.currentSession?.adventureId && (
+            <div className="mt-8">
+              <div className="w-full bg-indigo-500 text-white rounded-lg shadow-md p-6">
+                <button
+                  className="text-2xl font-semibold text-center w-full border border-white rounded-full"
+                  onClick={handleAdventureEndOnClick}
+                >
+                  End Adventure
+                </button>
+              </div>
+            </div>
+          )}
           <div ref={bottomRef} className="w-full" />
         </ScrollableFeed>
       </div>
@@ -266,7 +293,10 @@ const AdventureTextComponent = ({ adventureTextObject, idx, state }) => {
           firestore.add(
             `adventures/${state.currentAdventure.id}/adventureTexts/`,
             {
-              text: adventureTextObject.text + " " + option.value,
+              text: (adventureTextObject.text + " " + option.value).replace(
+                " s ",
+                "'s "
+              ),
               isHidden: false,
               options: null,
               createdAt: new Date().toISOString(),
@@ -275,6 +305,11 @@ const AdventureTextComponent = ({ adventureTextObject, idx, state }) => {
               generateNext: true
             }
           )
+        )
+        .then(() =>
+          firestore.update(`adventures/${state.currentAdventure.id}`, {
+            progression: state.currentAdventure.progression + 1
+          })
         );
     }
   };
@@ -326,17 +361,20 @@ const AdventureTextComponent = ({ adventureTextObject, idx, state }) => {
                     >
                       <div className="w-8">{optionIdx + 1}.</div>
                       <div className="flex-1">
-                        {adventureTextObject.text + " " + option.label}
+                        {(
+                          adventureTextObject.text +
+                          " " +
+                          option.label
+                        ).replace(" s ", "'s ")}
                       </div>
                     </div>
                   </div>
                 ))}
-                {!adventureTextObject?.selectedOption && (
-                  <CustomInputOption
-                    adventureTextObject={adventureTextObject}
-                    currentAdventure={state.currentAdventure}
-                  />
-                )}
+
+                <CustomInputOption
+                  adventureTextObject={adventureTextObject}
+                  currentAdventure={state.currentAdventure}
+                />
               </div>
             ) : (
               <div className="text-lg text-left">
@@ -345,6 +383,7 @@ const AdventureTextComponent = ({ adventureTextObject, idx, state }) => {
                   cursor={{
                     show: false
                   }}
+                  avgTypingDelay={150}
                 >
                   Generating options...
                 </Typist>
@@ -355,11 +394,7 @@ const AdventureTextComponent = ({ adventureTextObject, idx, state }) => {
       </React.Fragment>
     )
   ) : (
-    <div className="mt-8">
-      <div className="w-full bg-white rounded-lg shadow-md p-6">
-        <div className="text-lg">Loading...</div>
-      </div>
-    </div>
+    <></>
   );
 };
 
@@ -377,19 +412,24 @@ const CustomInputOption = ({ adventureTextObject, currentAdventure }) => {
           {
             selectedOption: {
               label: "custom",
-              value: state.textareaValue.trim()
+              value: state.textareaValue.trim() + "."
             }
           }
         )
         .then(() =>
           firestore.add(`adventures/${currentAdventure.id}/adventureTexts/`, {
-            text: state.textareaValue.trim(),
+            text: state.textareaValue.trim() + ".",
             isHidden: false,
             options: null,
             createdAt: new Date().toISOString(),
             generateOptions: false,
             cancelled: false,
             generateNext: true
+          })
+        )
+        .then(() =>
+          firestore.update(`adventures/${currentAdventure.id}`, {
+            progression: currentAdventure.progression + 1
           })
         );
     }
@@ -400,9 +440,9 @@ const CustomInputOption = ({ adventureTextObject, currentAdventure }) => {
   return (
     <div
       className={
-        "w-full p-3 border border-white rounded" +
+        "w-full p-3 border border-white rounded " +
         (adventureTextObject?.selectedOption?.label === "custom"
-          ? "text-indigo-500"
+          ? "bg-white text-indigo-500"
           : "text-white")
       }
     >
@@ -416,7 +456,11 @@ const CustomInputOption = ({ adventureTextObject, currentAdventure }) => {
               : "bg-indigo-500")
           }
           placeholder={"Enter your custom action"}
-          value={state.textareaValue}
+          value={
+            adventureTextObject?.selectedOption?.label === "custom"
+              ? "Custom action"
+              : state.textareaValue
+          }
           onChange={handleTextareaOnChange}
         />
       </div>
@@ -424,7 +468,10 @@ const CustomInputOption = ({ adventureTextObject, currentAdventure }) => {
         <div className="flex-1" />
         {state.textareaValue.length >= 3 &&
           !(adventureTextObject?.selectedOption?.label === "custom") && (
-            <button className="py-1 px-2 mt-2 rounded border border-white">
+            <button
+              className="py-1 px-2 mt-2 rounded border border-white"
+              onClick={handleSelectOptionOnClick}
+            >
               Submit
             </button>
           )}
