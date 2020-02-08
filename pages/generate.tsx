@@ -252,9 +252,9 @@ const Page: React.FC = () => {
           )}
           {state.currentSession?.adventureId && (
             <div className="mt-8">
-              <div className="w-full bg-indigo-500 text-white rounded-lg shadow-md p-6">
+              <div className="w-full bg-white text-indigo-300 rounded-lg shadow-md p-6">
                 <button
-                  className="text-2xl font-semibold text-center w-full border border-white rounded-full"
+                  className="text-lg font-semibold text-center w-full border border-indigo-300 rounded-full"
                   onClick={handleAdventureEndOnClick}
                 >
                   End Adventure
