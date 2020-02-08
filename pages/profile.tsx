@@ -111,7 +111,7 @@ const Page: React.FC = () => {
       <div className="flex flex-col p-6">
         {state.currentView === "adventures" &&
           userAdventures &&
-          userAdventures.length &&
+          userAdventures.length > 0 &&
           userAdventures.map(adventure => (
             <div key={adventure.id} className="mb-4">
               <AdventureCard adventure={adventure} />
@@ -139,7 +139,7 @@ const Page: React.FC = () => {
           ))}
         {state.currentView === "characters" &&
           userCharacters &&
-          !userCharacters.length && (
+          !(userCharacters.length > 0) && (
             <div className="text-center w-full mt-2 flex flex-col">
               <i>No characters yet...</i>
               <Link href="/generate">
