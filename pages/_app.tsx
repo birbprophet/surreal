@@ -5,6 +5,7 @@ import { ReactReduxFirebaseProvider } from "react-redux-firebase";
 
 import { store, rrfProps } from "../scripts/reduxFirebaseStore";
 import AppLayout from "../components/AppLayout";
+import FirebaseProvider from "../components/FirebaseProvider";
 
 import Div100vh from "react-div-100vh";
 
@@ -17,23 +18,25 @@ class NextApp extends App {
     const { Component: Page, pageProps, router } = this.props;
 
     return (
-      <Provider store={store}>
-        <ReactReduxFirebaseProvider {...rrfProps}>
-          {["/", "/login", "/welcome", "/generate"].includes(
-            router.pathname
-          ) ? (
-            <Div100vh>
-              <Page {...pageProps}></Page>
-            </Div100vh>
-          ) : (
-            <Div100vh>
-              <AppLayout routerPath={router.pathname}>
+      <FirebaseProvider>
+        <Provider store={store}>
+          <ReactReduxFirebaseProvider {...rrfProps}>
+            {["/", "/login", "/welcome", "/generate"].includes(
+              router.pathname
+            ) ? (
+              <Div100vh>
                 <Page {...pageProps}></Page>
-              </AppLayout>
-            </Div100vh>
-          )}
-        </ReactReduxFirebaseProvider>
-      </Provider>
+              </Div100vh>
+            ) : (
+              <Div100vh>
+                <AppLayout routerPath={router.pathname}>
+                  <Page {...pageProps}></Page>
+                </AppLayout>
+              </Div100vh>
+            )}
+          </ReactReduxFirebaseProvider>
+        </Provider>
+      </FirebaseProvider>
     );
   }
 }

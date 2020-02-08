@@ -7,7 +7,7 @@ import { createStore, combineReducers } from "redux";
 import { firebaseReducer } from "react-redux-firebase";
 import { createFirestoreInstance, firestoreReducer } from "redux-firestore";
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyCVN1mOjiqM1aw_SmJtrOCIiGZxnGH5C7I",
   authDomain: "surreal-d0311.firebaseapp.com",
   databaseURL: "https://surreal-d0311.firebaseio.com",

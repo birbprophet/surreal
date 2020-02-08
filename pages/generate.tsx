@@ -10,6 +10,7 @@ import ScrollableFeed from "react-scrollable-feed";
 import {} from "react-icons/fi";
 
 import Typist from "react-typist";
+import TextareaAutosize from "react-textarea-autosize";
 
 import LoadingModal from "../components/LoadingModal";
 import BackTopBar from "../components/BackTopBar";
@@ -252,32 +253,183 @@ const AdventureTextComponent = ({ adventureTextObject, idx, state }) => {
     });
   };
 
+  const handleSelectOptionOnClick = option => {
+    if (adventureTextObject && !adventureTextObject?.selectedOption) {
+      firestore
+        .update(
+          `adventures/${state.currentAdventure.id}/adventureTexts/${adventureTextObject.id}`,
+          {
+            selectedOption: option
+          }
+        )
+        .then(() =>
+          firestore.add(
+            `adventures/${state.currentAdventure.id}/adventureTexts/`,
+            {
+              text: adventureTextObject.text + " " + option.value,
+              isHidden: false,
+              options: null,
+              createdAt: new Date().toISOString(),
+              generateOptions: false,
+              cancelled: false,
+              generateNext: true
+            }
+          )
+        );
+    }
+  };
+
   return textReady ? (
-    <React.Fragment key={adventureTextObject.id}>
-      <div className="mt-8">
-        <div className="w-full bg-white rounded-lg shadow-md p-6">
-          <div className="text-lg">
-            {state.currentAdventure.progression === idx ? (
-              <Typist
-                startDelay={1000}
-                cursor={{
-                  show: false
-                }}
-                onTypingDone={handleOnTypingDone}
-              >
-                {adventureTextObject.text}
-              </Typist>
+    !adventureTextObject.generateOptions ? (
+      <React.Fragment key={adventureTextObject.id}>
+        <div className="mt-8">
+          <div className="w-full bg-white rounded-lg shadow-md p-6">
+            <div className="text-lg">
+              {state.currentAdventure.progression === idx ? (
+                <Typist
+                  startDelay={1000}
+                  cursor={{
+                    show: false
+                  }}
+                  onTypingDone={handleOnTypingDone}
+                >
+                  {adventureTextObject?.displayText
+                    ? adventureTextObject.displayText
+                    : adventureTextObject.text}
+                </Typist>
+              ) : (
+                <>
+                  {adventureTextObject?.displayText
+                    ? adventureTextObject.displayText
+                    : adventureTextObject.text}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </React.Fragment>
+    ) : (
+      <React.Fragment key={adventureTextObject.id}>
+        <div className="mt-8">
+          <div className="w-full bg-indigo-500 text-white rounded-lg shadow-md p-6">
+            {adventureTextObject.options ? (
+              <div className="text-lg text-left">
+                {adventureTextObject.options.map((option, optionIdx) => (
+                  <div key={optionIdx} className="mb-2">
+                    <div
+                      className={
+                        "border border-white rounded text-lg p-3 flex flex-row " +
+                        (adventureTextObject?.selectedOption?.label ===
+                          option.label && "bg-white text-indigo-500")
+                      }
+                      onClick={() => handleSelectOptionOnClick(option)}
+                    >
+                      <div className="w-8">{optionIdx + 1}.</div>
+                      <div className="flex-1">
+                        {adventureTextObject.text + " " + option.label}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {!adventureTextObject?.selectedOption && (
+                  <CustomInputOption
+                    adventureTextObject={adventureTextObject}
+                    currentAdventure={state.currentAdventure}
+                  />
+                )}
+              </div>
             ) : (
-              <>{adventureTextObject.text}</>
+              <div className="text-lg text-left">
+                <Typist
+                  startDelay={1000}
+                  cursor={{
+                    show: false
+                  }}
+                >
+                  Generating options...
+                </Typist>
+              </div>
             )}
           </div>
         </div>
-      </div>
-    </React.Fragment>
-  ) : adventureTextObject.options ? (
-    <>{JSON.stringify(adventureTextObject.options)}</>
+      </React.Fragment>
+    )
   ) : (
-    <></>
+    <div className="mt-8">
+      <div className="w-full bg-white rounded-lg shadow-md p-6">
+        <div className="text-lg">Loading...</div>
+      </div>
+    </div>
+  );
+};
+
+const CustomInputOption = ({ adventureTextObject, currentAdventure }) => {
+  const firestore = useFirestore();
+  const [state, setState] = useState({
+    textareaValue: ""
+  });
+
+  const handleSelectOptionOnClick = () => {
+    if (adventureTextObject && !adventureTextObject?.selectedOption) {
+      firestore
+        .update(
+          `adventures/${currentAdventure.id}/adventureTexts/${adventureTextObject.id}`,
+          {
+            selectedOption: {
+              label: "custom",
+              value: state.textareaValue.trim()
+            }
+          }
+        )
+        .then(() =>
+          firestore.add(`adventures/${currentAdventure.id}/adventureTexts/`, {
+            text: state.textareaValue.trim(),
+            isHidden: false,
+            options: null,
+            createdAt: new Date().toISOString(),
+            generateOptions: false,
+            cancelled: false,
+            generateNext: true
+          })
+        );
+    }
+  };
+  const handleTextareaOnChange = event => {
+    setState({ ...state, textareaValue: event.target.value });
+  };
+  return (
+    <div
+      className={
+        "w-full p-3 border border-white rounded" +
+        (adventureTextObject?.selectedOption?.label === "custom"
+          ? "text-indigo-500"
+          : "text-white")
+      }
+    >
+      <div className="flex w-full">
+        <div className="w-8">{adventureTextObject.options.length + 1}.</div>
+        <TextareaAutosize
+          className={
+            "w-full text-lg placeholder-indigo-300 " +
+            (adventureTextObject?.selectedOption?.label === "custom"
+              ? "bg-white"
+              : "bg-indigo-500")
+          }
+          placeholder={"Enter your custom action"}
+          value={state.textareaValue}
+          onChange={handleTextareaOnChange}
+        />
+      </div>
+      <div className="flex">
+        <div className="flex-1" />
+        {state.textareaValue.length >= 3 &&
+          !(adventureTextObject?.selectedOption?.label === "custom") && (
+            <button className="py-1 px-2 mt-2 rounded border border-white">
+              Submit
+            </button>
+          )}
+      </div>
+    </div>
   );
 };
 

@@ -5,5 +5,6 @@ export {
 } from "./firestoreToAlgolia";
 export {
   createAdventureInitialPrompt,
-  populateOptions
+  populateOptions,
+  generateNext
 } from "./adventureHandler";

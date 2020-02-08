@@ -43,6 +43,7 @@ export const createAdventureInitialPrompt = functions.firestore
       .collection("adventureTexts")
       .add({
         text: `One day, `,
+        displayText: "One day...",
         isHidden: false,
         options: null,
         createdAt: new Date().toISOString(),
@@ -128,8 +129,8 @@ export const populateOptions = functions.firestore
     const optionObjects = filteredOptionTexts
       .map(optionText => {
         return {
-          label: optionText.split(/[.,!:]/)[0],
-          value: optionText
+          label: optionText.split(/[.,!:]/)[0].replace(/  /g, " "),
+          value: optionText.replace(/  /g, " ")
         };
       })
       .sort((a, b) => a.label.length - b.label.length)
@@ -141,6 +142,109 @@ export const populateOptions = functions.firestore
       .collection("adventureTexts")
       .doc(context.params.adventureTextId)
       .update({ options: optionObjects });
+
+    return;
+  });
+
+export const generateNext = functions.firestore
+  .document("/adventures/{adventureDocId}/adventureTexts/{adventureTextId}")
+  .onCreate(async (snap, context) => {
+    const adventureTextDoc = snap.data();
+    const generateNext = adventureTextDoc?.generateNext;
+
+    if (!generateNext) {
+      return;
+    }
+
+    const adventureDocTextDocs = await db
+      .collection("adventures")
+      .doc(context.params.adventureDocId)
+      .collection("adventureTexts")
+      .where("cancelled", "==", false)
+      .orderBy("createdAt", "asc")
+      .get()
+      .then(query => query.docs.map(doc => doc.data()))
+      .catch(error => {
+        console.log("Error getting document:", error);
+      });
+
+    const adventureDocTexts: string[] = [];
+    adventureDocTextDocs.forEach(element => {
+      adventureDocTexts.push(element.text);
+    });
+
+    const cortexPrompt = adventureDocTexts.reduce((prevValue, currentValue) => {
+      if (!prevValue.length) {
+        return currentValue;
+      }
+      if (prevValue.endsWith("\n\n")) {
+        return prevValue + currentValue;
+      }
+      return prevValue + " " + currentValue;
+    }, "");
+
+    let option = "";
+    const result = await fetch(CORTEX_ENDPOINT, {
+      method: "post",
+      body: JSON.stringify({ text: cortexPrompt }),
+      headers: { "Content-Type": "application/json" }
+    }).then(res => res.json());
+    if (!result.includes("<|endoftext|>")) {
+      const matches = result.replace(cortexPrompt, "").match(SENTENCE_REGEX);
+      if (matches) {
+        option = matches.join("");
+      }
+    }
+
+    const adventureDoc = await db
+      .collection("adventures")
+      .doc(context.params.adventureDocId)
+      .get()
+      .then(doc => doc.data());
+
+    const primaryCharacter = adventureDoc.sessions[0].character;
+
+    if (option.length > 0) {
+      await db
+        .collection("adventures")
+        .doc(context.params.adventureDocId)
+        .collection("adventureTexts")
+        .add({
+          text: option,
+          isHidden: false,
+          options: null,
+          createdAt: new Date().toISOString(),
+          generateOptions: false,
+          cancelled: false
+        });
+
+      await db
+        .collection("adventures")
+        .doc(context.params.adventureDocId)
+        .collection("adventureTexts")
+        .add({
+          text: `${primaryCharacter.displayName}`,
+          isHidden: false,
+          options: null,
+          createdAt: new Date().toISOString(),
+          generateOptions: true,
+          cancelled: false
+        });
+    } else {
+      await db
+        .collection("adventures")
+        .doc(context.params.adventureDocId)
+        .collection("adventureTexts")
+        .add({
+          text: "",
+          isHidden: true,
+          options: null,
+          createdAt: new Date().toISOString(),
+          generateOptions: false,
+          cancelled: false,
+          generateNext: true
+        });
+    }
 
     return;
   });

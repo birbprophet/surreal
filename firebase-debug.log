@@ -1,0 +1,17 @@
+[debug] [2020-02-08T05:06:15.380Z] ----------------------------------------------------------------------
+[debug] [2020-02-08T05:06:15.382Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\benja\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2020-02-08T05:06:15.382Z] CLI Version:   7.12.1
+[debug] [2020-02-08T05:06:15.382Z] Platform:      win32
+[debug] [2020-02-08T05:06:15.382Z] Node Version:  v12.14.1
+[debug] [2020-02-08T05:06:15.385Z] Time:          Sat Feb 08 2020 13:06:15 GMT+0800 (Singapore Standard Time)
+[debug] [2020-02-08T05:06:15.385Z] ----------------------------------------------------------------------
+[debug] [2020-02-08T05:06:15.385Z] 
+[debug] [2020-02-08T05:06:15.393Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-02-08T05:06:15.394Z] > authorizing via signed-in user
+[debug] [2020-02-08T05:06:15.394Z] [iam] checking project surreal-d0311 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2020-02-08T05:06:15.395Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2020-02-08T05:06:15.395Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2020-02-08T05:06:15.486Z] <<< HTTP RESPONSE 200
+[debug] [2020-02-08T05:06:15.492Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/surreal-d0311:testIamPermissions  
+

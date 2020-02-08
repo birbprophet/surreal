@@ -24,6 +24,7 @@
     "react-redux-firebase": "^3.1.0",
     "react-scrollable-feed": "^1.1.2",
     "react-text-truncate": "^0.16.0",
+    "react-textarea-autosize": "^7.1.2",
     "react-typist": "^2.0.5",
     "react-typist-loop": "0.0.5",
     "redux": "^4.0.5",
