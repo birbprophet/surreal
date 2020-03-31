@@ -12,7 +12,7 @@
     "algoliasearch": "^4.0.1",
     "firebase": "^7.7.0",
     "framer-motion": "^1.8.2",
-    "next": "9.2.1",
+    "next": "9.3.2",
     "next-fonts": "^1.0.3",
     "react": "16.12.0",
     "react-div-100vh": "^0.3.8",
